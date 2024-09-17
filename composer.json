@@ -1,0 +1,20 @@
+{
+    "name": "rique/phpprojeto",
+    "description": "Projeto de ensino com PHP",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Source\\": "Source/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Rique Alefe",
+            "email": "riquealefe1230@hotmail.com"
+        }
+    ],
+    "require": {
+        "monolog/monolog": "^3.5"
+    }
+}
