@@ -7,6 +7,7 @@
 
 <?php
 
+
 //date_default_timezone_set("America/Sao_Paulo");
 define("CONFIG_DATE_TIMEZONE","America/Sao_Paulo");
 date_default_timezone_set (CONFIG_DATE_TIMEZONE);

@@ -1,8 +1,5 @@
 {
-    "name": "rique/phpprojeto",
-    "description": "Projeto de ensino com PHP",
-    "type": "project",
-    "license": "MIT",
+    "name": "samuel/cidadaofisca",
     "autoload": {
         "psr-4": {
             "Source\\": "Source/"
@@ -10,11 +7,9 @@
     },
     "authors": [
         {
-            "name": "Rique Alefe",
-            "email": "riquealefe1230@hotmail.com"
+            "name": "Sammael2k",
+            "email": "166345027+Sammuel360@users.noreply.github.com"
         }
     ],
-    "require": {
-        "monolog/monolog": "^3.5"
-    }
+    "require": {}
 }

@@ -1,0 +1,75 @@
+/* Estilo geral */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Cabeçalho */
+h1 {
+  text-align: center;
+  margin: 20px 0;
+  color: #444;
+}
+
+/* Container principal */
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Parágrafos e texto */
+p {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+p strong {
+  color: #555;
+}
+
+/* Botão de ação */
+.button {
+  display: inline-block;
+  margin: 20px 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background: #0056b3;
+}
+
+/* Layout responsivo */
+@media (max-width: 600px) {
+  .container {
+      padding: 15px;
+  }
+
+  p {
+      font-size: 14px;
+  }
+
+  h1 {
+      font-size: 20px;
+  }
+
+  .button {
+      font-size: 14px;
+      padding: 8px 16px;
+  }
+}

@@ -4,73 +4,61 @@ namespace Source\Models;
 
 use Source\Core\Model;
 
+require_once __DIR__ . '/../Core/Model.php';
 class StatusModel extends Model
 {
     protected $table = 'historico_status'; // Nome da tabela
 
-    /**
-     * Salva ou atualiza o histórico de status.
-     * @return StatusModel|null
-     */
-    public function save(): ?StatusModel
+    public function save(array $data): ?bool
     {
+        $this->data = (object) $data;
+
         if (!$this->required()) {
             return null;
         }
 
-        // Se o ID estiver presente, faz um update
-        if (!empty($this->data->id)) {
-            $query = "UPDATE {$this->table} SET
-                chamado_id = :chamado_id, 
-                status_anterior = :status_anterior,
-                status_atual = :status_atual, 
-                data_hora = NOW()
-                WHERE id = :id";
-            $params = http_build_query([
-                'chamado_id' => $this->data->chamado_id,
-                'status_anterior' => $this->data->status_anterior,
-                'status_atual' => $this->data->status_atual,
-                'id' => $this->data->id
-            ]);
+        // Inserção
+        $query = "INSERT INTO {$this->table}
+            (chamado_id, status, observacao)
+            VALUES (:chamado_id, :status, :observacao)";
+        $params = [
+            'chamado_id' => $this->data->chamado_id,
+            'status' => $this->data->status,
+            'observacao' => $this->data->observacao
+        ];
 
-            if ($this->update($query, $params)) {
-                $this->message = "Status atualizado com sucesso!";
-            } else {
-                $this->message = "Ooops, algo deu errado ao atualizar o status!";
-            }
+        $id = $this->create($query, $params);
+        if (!$id) {
+            $this->message = "Ooops, não foi possível cadastrar o histórico de status!";
+            return null;
         } else {
-            // Se o ID estiver vazio, faz um insert
-            $query = "INSERT INTO {$this->table}
-                (chamado_id, status_anterior, status_atual, data_hora)
-                VALUES (:chamado_id, :status_anterior, :status_atual, NOW())";
-            $params = http_build_query([
-                'chamado_id' => $this->data->chamado_id,
-                'status_anterior' => $this->data->status_anterior,
-                'status_atual' => $this->data->status_atual
-            ]);
-
-            $id = $this->create($query, $params);
-            if ($id) {
-                $this->data->id = $id;
-                $this->message = "Status salvo com sucesso!";
-            } else {
-                $this->message = "Ooops, algo deu errado ao salvar o status!";
-            }
+            $this->data->id = $id;
+            $this->message = "Histórico de status cadastrado com sucesso!";
+            return true;
         }
-
-        return $this;
     }
 
-    /**
-     * Verifica se os campos obrigatórios estão preenchidos.
-     * @return bool
-     */
     private function required(): bool
     {
-        if (empty($this->data->chamado_id) || empty($this->data->status_anterior) || empty($this->data->status_atual)) {
+        if (empty($this->data->chamado_id) || empty($this->data->status)) {
             $this->message = "Verifique o preenchimento dos campos obrigatórios!";
             return false;
         }
         return true;
+    }
+
+    public function listByChamadoId(int $chamadoId): ?array
+    {
+        $query = "SELECT * FROM {$this->table} WHERE chamado_id = :chamado_id";
+        $params = ['chamado_id' => $chamadoId];
+        $stmt = $this->read($query, $params);
+        return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
+    }
+
+    public function deleteById(int $id): bool
+    {
+        $query = "DELETE FROM {$this->table} WHERE id = :id";
+        $params = ['id' => $id];
+        return $this->delete($query, $params);
     }
 }

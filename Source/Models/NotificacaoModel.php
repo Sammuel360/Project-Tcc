@@ -1,70 +1,63 @@
 <?php
 
-namespace Source\Core;
+namespace Source\Models;
+
+use Source\Core\Model;
 
 class NotificacaoModel extends Model
 {
-    protected $table = 'notificacoes';
+    protected $table = 'notificacoes'; // Nome da tabela
 
-    /**
-     * Adiciona uma nova notificação para um usuário sobre um chamado.
-     * 
-     * @param int $usuario_id O ID do usuário.
-     * @param int $chamado_id O ID do chamado.
-     * @param string $mensagem A mensagem da notificação.
-     * @return int|null O ID da nova notificação ou null em caso de falha.
-     */
-    public function addNotificacao(int $usuario_id, int $chamado_id, string $mensagem): ?int
+    public function save(array $data): ?bool
     {
-        $query = "INSERT INTO {$this->table} (usuario_id, chamado_id, mensagem, created_at, updated_at)
-                  VALUES (:usuario_id, :chamado_id, :mensagem, NOW(), NOW())";
+        $this->data = (object) $data;
+
+        if (!$this->required()) {
+            return null;
+        }
+
+        // Inserção
+        $query = "INSERT INTO {$this->table}
+            (usuario_id, mensagem, data_criacao)
+            VALUES (:usuario_id, :mensagem, :data_criacao)";
         $params = http_build_query([
-            'usuario_id' => $usuario_id,
-            'chamado_id' => $chamado_id,
-            'mensagem' => $mensagem
+            'usuario_id' => $this->data->usuario_id,
+            'mensagem' => $this->data->mensagem,
+            'data_criacao' => $this->data->data_criacao
         ]);
+
         $id = $this->create($query, $params);
         if (!$id) {
-            $this->message = "Não foi possível adicionar a notificação.";
+            $this->message = "Ooops, não foi possível cadastrar a notificação!";
+            return null;
+        } else {
+            $this->data->id = $id;
+            $this->message = "Notificação cadastrada com sucesso!";
+            return true;
         }
-        return $id;
     }
 
-    /**
-     * Obtém todas as notificações para um usuário específico.
-     * 
-     * @param int $usuario_id O ID do usuário.
-     * @return array|null Array de notificações ou null em caso de falha.
-     */
-    public function getNotificacoesByUsuario(int $usuario_id): ?array
+    private function required(): bool
     {
-        $query = "SELECT * FROM {$this->table} WHERE usuario_id = :usuario_id ORDER BY created_at DESC";
-        $params = http_build_query(['usuario_id' => $usuario_id]);
-        $stmt = $this->read($query, $params);
-
-        if ($stmt && $stmt->rowCount()) {
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        if (empty($this->data->usuario_id) || empty($this->data->mensagem)) {
+            $this->message = "Verifique o preenchimento dos campos obrigatórios!";
+            return false;
         }
-        $this->message = "Nenhuma notificação encontrada para o usuário.";
-        return null;
+        return true;
     }
 
-    /**
-     * Obtém todas as notificações relacionadas a um chamado específico.
-     * 
-     * @param int $chamado_id O ID do chamado.
-     * @return array|null Array de notificações ou null em caso de falha.
-     */
-    public function getNotificacoesByChamado(int $chamado_id): ?array
+    public function listByUsuarioId(int $usuarioId): ?array
     {
-        $query = "SELECT * FROM {$this->table} WHERE chamado_id = :chamado_id ORDER BY created_at DESC";
-        $params = http_build_query(['chamado_id' => $chamado_id]);
+        $query = "SELECT * FROM {$this->table} WHERE usuario_id = :usuario_id";
+        $params = "usuario_id={$usuarioId}";
         $stmt = $this->read($query, $params);
+        return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
+    }
 
-        if ($stmt && $stmt->rowCount()) {
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        }
-        $this->message = "Nenhuma notificação encontrada para o chamado.";
-        return null;
+    public function deleteById(int $id): bool
+    {
+        $query = "DELETE FROM {$this->table} WHERE id = :id";
+        $params = "id={$id}";
+        return $this->delete($query, $params);
     }
 }
