@@ -3,8 +3,9 @@
 namespace Source\Controllers;
 
 use Source\Models\ChamadoModel;
+use Source\Models\OrgaoModel;
 
-require_once 'models/OrgaoModel.php';
+require_once __DIR__ . '/../Models/OrgaoModel.php'; // Inclui OrgaoModel.php corretamente
 
 class ChamadoController
 {
