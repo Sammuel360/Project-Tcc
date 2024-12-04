@@ -5,80 +5,102 @@ namespace Source\Controllers;
 use Source\Models\ChamadoModel;
 use Source\Models\OrgaoModel;
 
-require_once __DIR__ . '/../Models/OrgaoModel.php'; // Inclui OrgaoModel.php corretamente
+require_once __DIR__ . '/../Models/ChamadoModel.php';
+require_once __DIR__ . '/../Models/OrgaoModel.php';
 
 class ChamadoController
 {
     private $model;
+    private $orgaoModel;
 
     public function __construct()
     {
         $this->model = new ChamadoModel();
+        $this->orgaoModel = new OrgaoModel();  // Agora estamos instanciando o OrgaoModel corretamente
     }
 
-    /**
-     * Método para exibir o formulário de abertura de chamados
-     */
-    public function abrirFormulario()
+    public function abrirFormulario(): void
     {
-        // Obter todos os órgãos cadastrados no banco
-        $orgaos = $this->model->getAllOrgaos();
+        try {
+            // Obtém os órgãos do banco
+            $orgaos = $this->orgaoModel->listarTodos();
 
-        // Inclui a view e passa os dados necessários
-        require 'tema/admin/Chamados.php';
+            // Armazena os órgãos na sessão para a view
+            $_SESSION['orgaos'] = $orgaos;
+
+            // Inclui a view com os dados dos órgãos
+            require_once __DIR__ . '/../../tema/admin/chamados.php';
+        } catch (\Exception $e) {
+            // Exibe uma mensagem de erro genérica (substituir por logging em produção)
+            echo "Erro ao carregar formulário: " . $e->getMessage();
+        }
     }
 
-    /**
-     * Método para processar a inserção de um novo chamado
-     */
     public function inserir()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Captura e sanitiza os dados enviados pelo formulário
+            // Obtém os dados do formulário
             $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $cep = filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $endereco = filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $usuario_id = filter_input(INPUT_POST, 'usuario_id', FILTER_VALIDATE_INT);
-            $orgao_id = filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT) ?: null;
+            $orgao_id = filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT);
 
-            // Validação dos campos obrigatórios
-            if (empty($titulo) || empty($descricao) || empty($cep) || empty($endereco) || empty($usuario_id)) {
+            // Verifica se o usuário está logado
+            if (!isset($_SESSION['usuario_id'])) {
+                $_SESSION['message'] = 'Você precisa estar logado para abrir um chamado!';
+                header('Location: index.php?c=login');
+                exit();
+            }
+
+            // O ID do usuário logado será obtido da sessão
+            $usuario_id = $_SESSION['usuario_id'];
+
+            // Verifica se os campos obrigatórios foram preenchidos
+            if (empty($titulo) || empty($descricao) || empty($cep) || empty($endereco) || empty($orgao_id)) {
                 $_SESSION['message'] = 'Por favor, preencha todos os campos obrigatórios!';
                 header('Location: index.php?c=chamado&a=abrirFormulario');
                 exit();
             }
 
-            // Dados a serem salvos no banco
+            // Verifica se o órgão existe
+            $orgao = $this->orgaoModel->findById($orgao_id);
+            if (!$orgao) {
+                $_SESSION['message'] = 'Órgão inválido!';
+                header('Location: index.php?c=chamado&a=abrirFormulario');
+                exit();
+            }
+
+            // Dados para inserir no banco de dados
             $data = [
                 'titulo' => $titulo,
                 'descricao' => $descricao,
                 'cep' => $cep,
                 'endereco' => $endereco,
-                'usuario_id' => $usuario_id,
+                'usuario_id' => $usuario_id, // O ID do usuário logado
                 'orgao_id' => $orgao_id,
-                'status' => 'pendente', // Status inicial do chamado
+                'status' => 'pendente',  // O status padrão é 'pendente'
+                'data_hora' => date('Y-m-d H:i:s')
             ];
 
-            // Tentativa de salvar o chamado
+            // Tenta salvar o chamado
             if ($this->model->save($data)) {
-                $idChamado = $this->model->getLastInsertId();
-                header('Location: index.php?c=chamado&a=detalhes&id=' . $idChamado);
+                $lastInsertId = $this->model->getLastInsertId(); // Pegando o ID do último chamado inserido
+                $_SESSION['message'] = 'Chamado aberto com sucesso!';
+                header("Location: index.php?c=chamado&a=detalhes&id=$lastInsertId");
                 exit();
             } else {
-                $_SESSION['message'] = $this->model->message ?? 'Erro ao salvar o chamado.';
+                $_SESSION['message'] = 'Erro ao salvar o chamado. Tente novamente.';
                 header('Location: index.php?c=chamado&a=abrirFormulario');
                 exit();
             }
-        } else {
-            // Caso não seja uma requisição POST, redireciona para o formulário
-            $this->abrirFormulario();
         }
+
+        // Chama o formulário de abertura de chamados
+        $this->abrirFormulario();
     }
 
-    /**
-     * Método para exibir os detalhes de um chamado específico
-     */
+
     public function detalhes()
     {
         $idChamado = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -89,6 +111,7 @@ class ChamadoController
             exit();
         }
 
+        // Busca o chamado pelo ID
         $chamado = $this->model->findById($idChamado);
 
         if (!$chamado) {
@@ -97,7 +120,7 @@ class ChamadoController
             exit();
         }
 
-        // Inclui a view com os detalhes do chamado
-        require 'tema/admin/DetalhesChamado.php';
+        // Exibe os detalhes do chamado
+        require __DIR__ . '/../../tema/admin/DetalhesChamado.php';
     }
 }

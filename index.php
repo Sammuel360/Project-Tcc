@@ -8,11 +8,13 @@ use Source\Controllers\UsuarioController;
 use Source\Controllers\ChamadoController;
 use Source\Controllers\StatusController;
 use Source\Controllers\NotificacaoController;
+use Source\Controllers\OrgaoController;  // Inclusão do controlador de Órgão
 
 session_start();
 require_once __DIR__ . '/vendor/autoload.php';
 
-require_once 'vendor/autoload.php';
+require 'vendor/autoload.php';
+
 
 // Ajuste do filtro para sanitizar as entradas
 $c = filter_input(INPUT_GET, 'c', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'usuario'; // controller
@@ -62,7 +64,20 @@ switch ($c) {
 
     case 'status':
         $controller = new StatusController();
-        $controller->index();
+        switch ($a) {
+            case 'inserir':
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    $controller->inserir($_POST);
+                }
+                break;
+            case 'listar':
+                if (isset($_GET['chamado_id'])) {
+                    $controller->listarPorChamadoId((int) $_GET['chamado_id']);
+                }
+                break;
+        }
+
+
         break;
 
     case 'notificacao':
@@ -85,6 +100,28 @@ switch ($c) {
                 $controller->all();
                 break;
         }
+        break;
+
+    case 'orgao':
+        $controller = new OrgaoController();
+        switch ($a) {
+            case 'listar':
+                $orgaos = $controller->listar();
+                include_once __DIR__ . '/tema/admin/chamados.php';
+                break;
+        }
+        break;
+
+    case 'configuracoes':
+        include_once __DIR__ . '/tema/admin/configuracoes.php';
+        break;
+
+    case 'perfil':
+        include_once __DIR__ . '/tema/admin/perfil.php';
+        break;
+
+    case 'ajuda':
+        include_once __DIR__ . '/tema/admin/ajuda.php';
         break;
 
     default:

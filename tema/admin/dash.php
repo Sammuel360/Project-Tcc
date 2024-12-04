@@ -209,3 +209,17 @@
 </body>
 
 </html>
+
+
+
+erifica se há órgãos disponíveis
+if (!$orgaos) {
+$_SESSION['message'] = 'Nenhum órgão cadastrado ou erro ao carregar órgãos.';
+header('Location: index.php'); // Redireciona para página principal
+
+}
+
+// Instancia o UsuarioModel para obter o usuário logado
+$usuarioModel = new UsuarioModel();
+$usuario_id = $usuarioModel->getUsuarioLogadoId(); // Aqui você precisará de uma função para recuperar o ID do usuário
+logado

@@ -4,12 +4,12 @@ namespace Source\Models;
 
 use Source\Core\Model;
 
-require_once __DIR__ . '/../Core/Model.php';
-
 class UsuarioModel extends Model
 {
-    protected $table = 'usuarios'; // Nome da tabela
+    // Nome da tabela
+    protected $table = 'usuarios';
 
+    // Método save
     public function save(array $data): ?bool
     {
         $this->data = (object) $data;
@@ -38,7 +38,7 @@ class UsuarioModel extends Model
                 'cidade' => $this->data->cidade,
                 'estado' => $this->data->estado,
                 'cep' => $this->data->cep,
-                'senha' => $this->data->senha, // Use a senha diretamente
+                'senha' => $this->data->senha,
                 'id' => $this->data->id
             ];
 
@@ -61,10 +61,10 @@ class UsuarioModel extends Model
                 'cidade' => $this->data->cidade,
                 'estado' => $this->data->estado,
                 'cep' => $this->data->cep,
-                'senha' => $this->data->senha // Use a senha diretamente
+                'senha' => $this->data->senha
             ];
 
-            $id = $this->create($query, $params);
+            $id = $this->create($query, $params); // Certifique-se de que `create` está acessível
             if (!$id) {
                 $this->message = "Ooops, não foi possível cadastrar o usuário!";
                 return null;
@@ -119,5 +119,10 @@ class UsuarioModel extends Model
         $query = "DELETE FROM {$this->table} WHERE id = :id";
         $params = ['id' => $id];
         return $this->delete($query, $params);
+    }
+
+    public function getUsuarioLogadoId(): ?int
+    {
+        return isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
     }
 }
