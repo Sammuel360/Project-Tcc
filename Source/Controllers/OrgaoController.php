@@ -4,6 +4,8 @@ namespace Source\Controllers;
 
 use Source\Models\OrgaoModel;
 
+require_once __DIR__ . '/../Models/OrgaoModel.php';
+
 class OrgaoController
 {
     private $model;
@@ -14,51 +16,10 @@ class OrgaoController
     }
 
     /**
-     * Lista todos os órgãos.
+     * Lista todos os órgãos e exibe-os na tela
      */
-    public function listar()
+    public function listar(): array
     {
-        $orgaos = $this->model->listAll();
-        include 'views/OrgaosList.php'; // Exemplo de view para exibir os órgãos
-    }
-
-    /**
-     * Insere um novo órgão.
-     */
-    public function inserir()
-    {
-        $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
-
-        if (!$nome) {
-            $_SESSION['message'] = 'O nome do órgão é obrigatório.';
-            header('Location: Orgaos.php');
-            exit();
-        }
-
-        if ($this->model->save(['nome' => $nome])) {
-            $_SESSION['message'] = 'Órgão cadastrado com sucesso!';
-        } else {
-            $_SESSION['message'] = 'Erro ao cadastrar o órgão.';
-        }
-
-        header('Location: Orgaos.php');
-        exit();
-    }
-
-    /**
-     * Exclui um órgão.
-     */
-    public function excluir()
-    {
-        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-
-        if (!$id || !$this->model->deleteById($id)) {
-            $_SESSION['message'] = 'Erro ao excluir o órgão.';
-        } else {
-            $_SESSION['message'] = 'Órgão excluído com sucesso!';
-        }
-
-        header('Location: Orgaos.php');
-        exit();
+        return $this->model->listarTodos(); // Retorna a lista de órgãos
     }
 }

@@ -1,75 +1,106 @@
-/* Estilo geral */
+
+/* Estilo do formulário */
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
-  line-height: 1.6;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
 }
 
-/* Cabeçalho */
-h1 {
-  text-align: center;
-  margin: 20px 0;
-  color: #444;
-}
-
-/* Container principal */
 .container {
-  max-width: 800px;
-  margin: 20px auto;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Parágrafos e texto */
-p {
-  margin: 10px 0;
-  font-size: 16px;
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
-p strong {
-  color: #555;
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }
 
-/* Botão de ação */
 .button {
-  display: inline-block;
-  margin: 20px 0;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  text-decoration: none;
-  background: #007bff;
-  color: #fff;
-  border-radius: 5px;
-  text-align: center;
-  transition: background-color 0.3s ease;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 
 .button:hover {
-  background: #0056b3;
+    background-color: #0056b3;
 }
 
-/* Layout responsivo */
-@media (max-width: 600px) {
-  .container {
-      padding: 15px;
-  }
+/* Estilo do menu lateral */
+#sidebar {
+    height: 100%;
+    width: 260px;
+    position: fixed;
+    top: 0;
+    left: -260px;
+    background-color: #1e293b;
+    color: white;
+    z-index: 1000;
+    padding-top: 20px;
+    transition: all 0.3s;
+}
 
-  p {
-      font-size: 14px;
-  }
+#sidebar.active {
+    left: 0;
+}
 
-  h1 {
-      font-size: 20px;
-  }
+#sidebar .sidebar-header {
+    padding: 20px;
+    background-color: #2563eb;
+    font-size: 1.3rem;
+}
 
-  .button {
-      font-size: 14px;
-      padding: 8px 16px;
-  }
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li a {
+    color: white;
+    padding: 15px 20px;
+    display: block;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+#sidebar ul li a:hover {
+    background-color: #2563eb;
+    border-radius: 5px;
+}
+
+/* Estilo do botão de alternância */
+#sidebarCollapse {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#content.shifted {
+    margin-left: 270px;
 }

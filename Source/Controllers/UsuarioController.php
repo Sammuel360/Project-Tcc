@@ -13,6 +13,8 @@ class UsuarioController
         $this->usuarioModel = new UsuarioModel();
     }
 
+    // UsuarioController.php
+
     public function autenticar(string $email, string $password)
     {
         // Sanitizando o email
@@ -23,14 +25,18 @@ class UsuarioController
         if ($usuario && password_verify($password, $usuario->senha)) {
             // Inicia a sessão e armazena o usuário logado
             $_SESSION['usuario'] = $usuario;
-            header("Location: tema/admin/dashboard.php");
+
+            // Redireciona para a tela principal (Dashboard) após o login
+            header("Location: /cidadaofisca/tema/admin/main.php");
             exit;
         }
 
-        // Mensagem de erro
-        header("Location: index.php?message=Email ou senha incorretos");
+        // Mensagem de erro no login
+        $_SESSION['message'] = 'Email ou senha incorretos';
+        header("Location: /index.php?c=usuario&a=logar");  // Redireciona de volta para a página de login
         exit;
     }
+
 
     public function inserir(array $data)
     {
@@ -90,13 +96,19 @@ class UsuarioController
 
     public function main()
     {
+        // Verifica se o usuário está logado antes de permitir o acesso à página principal
+        if (!isset($_SESSION['usuario'])) {
+            header('Location: /index.php?c=usuario&a=logar');
+            exit;
+        }
+
         // Página principal após o login
-        require 'tema/admin/main.php';
+        require 'tema/admin/main.php';  // Correção do caminho
     }
 
     public function cadastrar()
     {
         // Página de cadastro
-        require 'tema/admin/cadastroUsuario.php';
+        require 'tema/admin/cadastroUsuario.php';  // Correção do caminho
     }
 }

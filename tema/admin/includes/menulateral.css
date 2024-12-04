@@ -1,0 +1,118 @@
+/* Estilos gerais */
+body {
+    background-color: #f4f7f9;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Barra superior */
+header .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #0066cc;
+    color: white;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+header .top-bar h1 {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+header .top-bar nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 1.5rem;
+    font-size: 1rem;
+}
+
+header .top-bar .menu-button-container {
+    display: none; /* Esconde o botão do menu em telas grandes */
+}
+
+/* Menu lateral */
+#sidebar {
+    height: 100%;
+    width: 260px;
+    position: fixed;
+    top: 0;
+    left: -260px;
+    background-color: #1e293b;
+    color: white;
+    z-index: 1000;
+    padding-top: 20px;
+    transition: all 0.3s;
+}
+
+#sidebar.active {
+    left: 0; /* Ativa o menu lateral */
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background-color: #2563eb;
+    font-size: 1.3rem;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+#sidebar ul li a {
+    color: white;
+    padding: 15px 20px;
+    display: block;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+#sidebar ul li a:hover {
+    background-color: #2563eb;
+    border-radius: 5px;
+}
+
+/* Botão de colapso do menu lateral */
+#sidebarCollapse {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    header .top-bar nav {
+        display: none; /* Esconde os links de navegação na barra superior */
+    }
+
+    header .top-bar .menu-button-container {
+        display: block; /* Mostra o botão de menu */
+    }
+
+    #sidebar {
+        width: 100%; /* Largura total em telas pequenas */
+        position: relative;
+    }
+
+    #content {
+        margin-left: 0;
+    }
+
+    #sidebarCollapse {
+        display: block; /* Exibe o botão de colapso */
+    }
+}

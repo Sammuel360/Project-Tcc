@@ -5,6 +5,7 @@ namespace Source\Models;
 use Source\Core\Model;
 
 require_once __DIR__ . '/../Core/Model.php';
+
 class OrgaoModel extends Model
 {
     protected $table = 'orgaos'; // Nome da tabela
@@ -17,66 +18,67 @@ class OrgaoModel extends Model
             return null;
         }
 
-        // Atualização
         if (!empty($this->data->id)) {
             $query = "UPDATE {$this->table} SET
-                nome = :nome,
-                endereco = :endereco,
-                telefone = :telefone
-                WHERE id = :id";
+                nome = :nome
+            WHERE id = :id";
+
             $params = [
                 'nome' => $this->data->nome,
-                'endereco' => $this->data->endereco,
-                'telefone' => $this->data->telefone,
                 'id' => $this->data->id
             ];
 
             return $this->update($query, $params);
         }
 
-        // Inserção
         $query = "INSERT INTO {$this->table}
-            (nome, endereco, telefone)
-            VALUES (:nome, :endereco, :telefone)";
+            (nome)
+            VALUES (:nome)";
+
         $params = [
-            'nome' => $this->data->nome,
-            'endereco' => $this->data->endereco,
-            'telefone' => $this->data->telefone
+            'nome' => $this->data->nome
         ];
 
-        $id = $this->create($query, $params);
-        if (!$id) {
-            $this->message = "Ooops, não foi possível cadastrar o órgão!";
-            return null;
-        } else {
-            $this->data->id = $id;
+        if ($this->create($query, $params)) {
+            $this->data->id = $this->getLastInsertId();
             $this->message = "Órgão cadastrado com sucesso!";
             return true;
         }
+
+        $this->message = "Erro ao cadastrar o órgão!";
+        return null;
     }
 
     private function required(): bool
     {
         if (empty($this->data->nome)) {
-            $this->message = "Verifique o preenchimento dos campos obrigatórios!";
+            $this->message = "O campo 'nome' é obrigatório!";
             return false;
         }
         return true;
     }
 
-    public function listAll(): ?array
+
+    /**
+     * Retorna todos os órgãos cadastrados no banco de dados.
+     */
+    // Método para listar todos os órgãos
+
+    public function listarTodos(): ?array
     {
         $query = "SELECT * FROM {$this->table}";
         $stmt = $this->read($query);
-        return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
+        return $stmt ? $stmt->fetchAll(\PDO::FETCH_OBJ) : null;
     }
+
 
     public function findById(int $id): ?OrgaoModel
     {
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
         $params = ['id' => $id];
         $stmt = $this->read($query, $params);
-        return $stmt && $stmt->rowCount() ? $stmt->fetchObject(__CLASS__) : null;
+
+        return $stmt && $stmt->rowCount() ? $stmt->fetchAll(\PDO::FETCH_CLASS, __CLASS__) : null;
     }
 
     public function deleteById(int $id): bool
@@ -84,5 +86,11 @@ class OrgaoModel extends Model
         $query = "DELETE FROM {$this->table} WHERE id = :id";
         $params = ['id' => $id];
         return $this->delete($query, $params);
+    }
+
+    private function getLastInsertId()
+    {
+        $pdo = \Source\Core\Connect::getInstance();
+        return $pdo ? $pdo->lastInsertId() : null;
     }
 }

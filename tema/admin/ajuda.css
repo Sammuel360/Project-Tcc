@@ -1,312 +1,179 @@
-/* Geral */
-body.stilo1 {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+body {
+  font-family: 'Arial', sans-serif;
   margin: 0;
-  padding: 0;
-}
-
-main {
-  padding-top: 80px; /* Ajusta o espaço superior devido à barra fixa */
-  margin: 20px;
-}
-
-/* Barra Superior */
-header .top-bar {
+  padding: 20px;
+  background-color: #eaf4ff; /* Fundo azul claro */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: #0066cc;
-  color: white;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+  flex-direction: column; /* Coloca os elementos em coluna */
+  justify-content: center; /* Centraliza verticalmente */
+  align-items: center; /* Centraliza horizontalmente */
+  min-height: 100vh; /* Garante que ocupe toda a altura da tela */
 }
 
-header .top-bar h1 {
-  font-size: 1.8rem;
+header {
+  text-align: center;
+  padding: 20px;
+  background-color: #007BFF; /* Azul para o cabeçalho */
+  color: #ffffff; /* Cor branca para o texto do cabeçalho */
+  border-radius: 8px; /* Bordas arredondadas */
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 28px; /* Tamanho maior para o título principal */
+}
+
+.index {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffffff; /* Fundo branco para contraste */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 80%; /* Largura do índice */
+  max-width: 800px; /* Largura máxima para telas grandes */
+}
+
+.index h2 {
+  color: #007BFF; /* Azul para o título do índice */
+}
+
+.container {
+  margin: 20px;
+  padding: 20px;
+  background-color: #ffffff; /* Fundo branco para contraste */
+  border: 1px solid #ccc;
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 80%; /* Largura do conteúdo */
+  max-width: 800px; /* Largura máxima para telas grandes */
+}
+
+.section-title {
+  margin-top: 0;
+  color: #007BFF; /* Azul para os títulos */
+  font-size: 24px; /* Tamanho maior para subtítulos */
   font-weight: bold;
 }
 
-header .top-bar nav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 1.5rem;
-  font-size: 1rem;
+.section-text {
+  margin-bottom: 20px;
+  font-size: 16px; /* Tamanho padrão para texto */
+  line-height: 1.6; /* Aumenta o espaçamento entre linhas */
 }
 
-/* Cards para os tópicos */
-.card {
-  background-color: white;
+.faq {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #ffffff; /* Fundo branco para contraste */
+  border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
-  padding: 20px;
-  transition: transform 0.3s ease-in-out;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+.faq h3 {
+  color: #007BFF; /* Azul para os títulos de FAQ */
 }
 
-.card h3 {
-  font-size: 1.5rem;
+.step-title {
+  font-size: 20px; /* Tamanho para títulos de passos */
+  color: #0056b3; /* Azul mais escuro */
+}
+
+.step-list {
+  padding-left: 20px;
+}
+
+.step-list li {
   margin-bottom: 10px;
-  color: #0066cc;
+  font-size: 16px; /* Tamanho padrão para texto de passos */
 }
 
-.card p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #333;
+.use-case-title, .tips-title, .faq-title, .contact-title, .terms-title, .credits-title {
+  font-size: 20px; /* Tamanho
+.step-list li {
+  margin-bottom: 10px;
+  font-size: 16px; /* Tamanho padrão para texto de passos */
 }
 
-.card ol {
-  margin: 10px 0 20px 20px;
-  font-size: 1rem;
+.use-case-title, .tips-title, .faq-title, .contact-title, .terms-title, .credits-title {
+  font-size: 20px; /* Tamanho para títulos de seções específicas */
+  color: #0056b3; /* Azul mais escuro */
 }
 
-/* Modal */
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.use-case-list, .tips-list {
+  padding-left: 20px;
 }
 
-h2 {
-  font-size: 1.8rem;
-  color: #0066cc;
-}
-
-p {
-  font-size: 1rem;
-  color: #333;
+.use-case-list li, .tips-list li {
+  margin-bottom: 10px;
+  font-size: 16px; /* Tamanho padrão para texto de listas */
 }
 
 footer {
-  background-color: #0066cc;
-  color: white;
   text-align: center;
-  padding: 10px 0;
+  margin-top: 20px;
+  color: #555;
+  background-color: #007BFF; /* Azul para o rodapé */
+  padding: 10px;
+  border-radius: 8px; /* Bordas arredondadas */
+  color: #ffffff; /* Cor branca para o texto do rodapé */
+}
+/* Estilo do menu lateral */
+#sidebar {
+  height: 100%;
+  width: 260px;
   position: fixed;
-  width: 100%;
-  bottom: 0;
+  top: 0;
+  left: -260px;
+  background-color: #1e293b;
+  color: white;
+  z-index: 1000;
+  padding-top: 20px;
+  transition: all 0.3s;
 }
 
-footer p {
-  margin: 0;
+#sidebar.active {
+  left: 0;
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .top-bar {
-      flex-direction: column;
-      align-items: flex-start;
-  }
-
-  header .top-bar nav {
-      margin-top: 10px;
-  }
-
-  .card {
-      margin: 10px 0;
-  }
+#sidebar .sidebar-header {
+  padding: 20px;
+  background-color: #2563eb;
+  font-size: 1.3rem;
 }
 
-    
-    /* Barra Superior */
-    header .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: #0066cc;
-        color: white;
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-    }
+#sidebar ul {
+  list-style: none;
+  padding: 0;
+}
 
-    header .top-bar h1 {
-        font-size: 1.8rem;
-        font-weight: bold;
-    }
+#sidebar ul li a {
+  color: white;
+  padding: 15px 20px;
+  display: block;
+  text-decoration: none;
+  font-size: 1.1rem;
+}
 
-    header .top-bar nav a {
-        color: white;
-        text-decoration: none;
-        margin: 0 1.5rem;
-        font-size: 1rem;
-    }
+#sidebar ul li a:hover {
+  background-color: #2563eb;
+  border-radius: 5px;
+}
 
-    header .top-bar .profile-section {
-        display: flex;
-        align-items: center;
-    }
+/* Estilo do botão de alternância */
+#sidebarCollapse {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1050;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+}
 
-    header .top-bar .profile-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-    }
-
-    /*organizacao*/
-    /* Geral */
-    body.stilo2 {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-    }
-
-    main {
-        padding-top: 80px;
-        /* Ajusta o espaço superior devido à barra fixa */
-        margin: 20px;
-    }
-
-    /* Barra Superior */
-    header .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 2rem;
-        background-color: #0066cc;
-        color: white;
-        position: fixed;
-        top: 0;
-        width: 100%;
-        z-index: 1000;
-    }
-
-    header .top-bar h1 {
-        font-size: 1.8rem;
-        font-weight: bold;
-    }
-
-    header .top-bar nav a {
-        color: white;
-        text-decoration: none;
-        margin: 0 1.5rem;
-        font-size: 1rem;
-    }
-
-    /* Cards para os tópicos */
-    .card {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 20px 0;
-        padding: 20px;
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-    }
-
-    .card h3 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-        color: #0066cc;
-    }
-
-    .card p {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #333;
-    }
-
-    .card ol {
-        margin: 10px 0 20px 20px;
-        font-size: 1rem;
-    }
-
-    /* Modal */
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        max-width: 900px;
-        margin: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h2 {
-        font-size: 1.8rem;
-        color: #0066cc;
-    }
-
-    p {
-        font-size: 1rem;
-        color: #333;
-    }
-
-    footer {
-        background-color: #0066cc;
-        color: white;
-        text-align: center;
-        padding: 10px 0;
-        position: fixed;
-        width: 100%;
-        bottom: 0;
-    }
-
-    footer p {
-        margin: 0;
-    }
-
-    /* Responsividade */
-    @media (max-width: 768px) {
-        .top-bar {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        header .top-bar nav {
-            margin-top: 10px;
-        }
-
-        .card {
-            margin: 10px 0;
-        }
-    }
-
-    /* Sidebar */
-    .sidebar {
-        width: 230px;
-        background-color: #333;
-        padding: 2rem 1.5rem;
-        color: white;
-        position: fixed;
-        height: 100%;
-        top: 0;
-        left: -240px;
-        transition: all 0.3s ease;
-        z-index: 9999;
-        /* Isso coloca a sidebar acima de outros elementos */
-    }
-
-    .main-content.active {
-        margin-left: 240px;
-        /* Espaço para a sidebar quando ela está ativa */
-    }
-
-    /* Ajustes para a sidebar quando estiver ativa */
-    .sidebar.active {
-        left: 0;
-    }
-
-    .main-content.active {
-        margin-left: 240px;
-        /* Ajuste para permitir que o conteúdo principal desloque */
-    }
-
-
+#content.shifted {
+  margin-left: 270px;
+}

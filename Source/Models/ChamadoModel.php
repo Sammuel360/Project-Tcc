@@ -7,79 +7,112 @@ use Source\Core\Connect;
 
 require_once __DIR__ . '/../Core/Model.php';
 
-
 class ChamadoModel extends Model
 {
     protected $table = 'chamados'; // Nome da tabela
 
+    /**
+     * Salva ou atualiza um chamado no banco de dados
+     */
     public function save(array $data): ?bool
     {
         $this->data = (object) $data;
 
+        // Valida os campos obrigatórios
         if (!$this->required()) {
-            return null;
+            return false; // Retorna falso se a validação falhar
         }
 
         if (!empty($this->data->id)) {
-            // Atualização
-            $query = "UPDATE {$this->table} SET
-                titulo = :titulo,
-                descricao = :descricao,
-                localizacao = ST_GeomFromText(:localizacao),
-                data_hora = :data_hora,
-                status = :status,
-                usuario_id = :usuario_id,
-                orgao_id = :orgao_id
-            WHERE id = :id";
-
-            $params = [
-                'titulo' => $this->data->titulo,
-                'descricao' => $this->data->descricao,
-                'localizacao' => $this->data->localizacao,
-                'data_hora' => $this->data->data_hora,
-                'status' => $this->data->status,
-                'usuario_id' => $this->data->usuario_id,
-                'orgao_id' => $this->data->orgao_id,
-                'id' => $this->data->id
-            ];
-
-            return $this->update($query, $params);
+            // Atualização de chamado
+            return $this->updateChamado();
         } else {
-            // Inserção
-            $query = "INSERT INTO {$this->table}
-                (titulo, descricao, localizacao, data_hora, status, usuario_id, orgao_id)
-                VALUES (:titulo, :descricao, ST_GeomFromText(:localizacao), :data_hora, :status, :usuario_id, :orgao_id)";
+            // Inserção de novo chamado
+            return $this->insertChamado();
+        }
+    }
 
-            $params = [
-                'titulo' => $this->data->titulo,
-                'descricao' => $this->data->descricao,
-                'localizacao' => $this->data->localizacao,
-                'data_hora' => $this->data->data_hora ?? date("Y-m-d H:i:s"), // Timestamp atual
-                'status' => $this->data->status ?? 'pendente',
-                'usuario_id' => $this->data->usuario_id,
-                'orgao_id' => $this->data->orgao_id
-            ];
+    /**
+     * Atualiza os dados de um chamado
+     */
+    private function updateChamado(): bool
+    {
+        $query = "UPDATE {$this->table} SET
+            titulo = :titulo,
+            descricao = :descricao,
+            cep = :cep,
+            endereco = :endereco,
+            data_hora = :data_hora,
+            status = :status,
+            usuario_id = :usuario_id,
+            orgao_id = :orgao_id
+        WHERE id = :id";
 
+        $params = [
+            'titulo' => $this->data->titulo,
+            'descricao' => $this->data->descricao,
+            'cep' => $this->data->cep,
+            'endereco' => $this->data->endereco,
+            'data_hora' => $this->data->data_hora ?? date("Y-m-d H:i:s"),
+            'status' => $this->data->status ?? 'pendente',
+            'usuario_id' => $this->data->usuario_id,
+            'orgao_id' => $this->data->orgao_id,
+            'id' => $this->data->id
+        ];
+
+        // Chama o método update do modelo pai, caso exista
+        if (method_exists($this, 'update')) {
+            return $this->update($query, $params);
+        }
+        return false; // Caso o método não exista no modelo pai
+    }
+
+    /**
+     * Insere um novo chamado no banco de dados
+     */
+    private function insertChamado(): bool
+    {
+        $query = "INSERT INTO {$this->table} (titulo, descricao, cep, endereco, data_hora, status, usuario_id, orgao_id)
+        VALUES (:titulo, :descricao, :cep, :endereco, :data_hora, :status, :usuario_id, :orgao_id)";
+
+        $params = [
+            'titulo' => $this->data->titulo,
+            'descricao' => $this->data->descricao,
+            'cep' => $this->data->cep,
+            'endereco' => $this->data->endereco,
+            'data_hora' => $this->data->data_hora ?? date("Y-m-d H:i:s"),
+            'status' => $this->data->status ?? 'pendente',
+            'usuario_id' => $this->data->usuario_id,
+            'orgao_id' => $this->data->orgao_id
+        ];
+
+        // Chama o método create do modelo pai, caso exista
+        if (method_exists($this, 'create')) {
             if ($this->create($query, $params)) {
                 $this->data->id = $this->getLastInsertId();
                 $this->message = "Chamado cadastrado com sucesso!";
                 return true;
-            } else {
-                $this->message = "Ooops, não foi possível cadastrar o chamado!";
-                return null;
             }
         }
+        $this->message = "Erro ao cadastrar o chamado!";
+        return false;
     }
 
+    /**
+     * Valida campos obrigatórios
+     */
     private function required(): bool
     {
-        if (empty($this->data->titulo) || empty($this->data->descricao) || empty($this->data->localizacao)) {
+        if (empty($this->data->titulo) || empty($this->data->descricao) || empty($this->data->cep) || empty($this->data->endereco)) {
             $this->message = "Campos obrigatórios estão faltando!";
             return false;
         }
         return true;
     }
 
+    /**
+     * Lista todos os chamados com limite e offset
+     */
     public function listAll(int $limit = 10, int $offset = 0): ?array
     {
         $query = "SELECT * FROM {$this->table} LIMIT :limit OFFSET :offset";
@@ -87,10 +120,14 @@ class ChamadoModel extends Model
             'limit' => $limit,
             'offset' => $offset
         ];
+
         $stmt = $this->read($query, $params);
         return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
     }
 
+    /**
+     * Encontra um chamado pelo ID
+     */
     public function findById(int $id): ?ChamadoModel
     {
         $query = "SELECT * FROM {$this->table} WHERE id = :id";
@@ -102,6 +139,9 @@ class ChamadoModel extends Model
         return null;
     }
 
+    /**
+     * Exclui um chamado pelo ID
+     */
     public function deleteById(int $id): bool
     {
         $query = "DELETE FROM {$this->table} WHERE id = :id";
@@ -109,6 +149,9 @@ class ChamadoModel extends Model
         return $this->delete($query, $params);
     }
 
+    /**
+     * Retorna o último ID inserido
+     */
     public function getLastInsertId()
     {
         $pdo = Connect::getInstance();
@@ -117,18 +160,5 @@ class ChamadoModel extends Model
             return null;
         }
         return $pdo->lastInsertId();
-    }
-
-    // Novo método para obter os órgãos cadastrados
-    public function getAllOrgaos(): ?array
-    {
-        $query = "SELECT * FROM orgaos";
-        $stmt = $this->read($query);
-
-        if (!$stmt) {
-            error_log("Erro ao buscar órgãos: " . $this->pdo->errorInfo());
-        }
-
-        return $stmt ? $stmt->fetchAll(\PDO::FETCH_OBJ) : null;
     }
 }

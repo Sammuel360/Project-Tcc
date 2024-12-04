@@ -2,7 +2,6 @@
 
 namespace Source\Core;
 
-
 abstract class Model
 {
     /** @var \stdClass */
@@ -41,7 +40,6 @@ abstract class Model
     {
         return ($this->data->$name ?? null);
     }
-
     protected function create(string $query, array $params): ?int
     {
         try {
@@ -56,6 +54,8 @@ abstract class Model
             return null;
         }
     }
+
+
 
     protected function update(string $query, array $params): ?bool
     {
@@ -89,8 +89,13 @@ abstract class Model
 
     protected function read(string $query, array $params = []): ?\PDOStatement
     {
+        $pdo = Connect::getInstance();
+        if ($pdo === null) {
+            $this->fail = new \PDOException('Falha ao obter instância PDO');
+            return null;
+        }
         try {
-            $stmt = Connect::getInstance()->prepare($query);
+            $stmt = $pdo->prepare($query);
             foreach ($params as $key => $value) {
                 $stmt->bindValue(":{$key}", $value, is_numeric($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR);
             }
