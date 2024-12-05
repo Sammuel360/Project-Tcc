@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
+class ComposerStaticInit4f94d63fa0ca9055c71db64f12127c9a
 {
     public static $files = array (
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
@@ -12,10 +12,6 @@ class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
     );
 
     public static $prefixLengthsPsr4 = array (
-        'S' => 
-        array (
-            'Source\\' => 7,
-        ),
         'P' => 
         array (
             'PhpParser\\' => 10,
@@ -24,13 +20,13 @@ class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
         array (
             'DeepCopy\\' => 9,
         ),
+        'B' => 
+        array (
+            'Backend\\Src\\' => 12,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Source\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/Source',
-        ),
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
@@ -38,6 +34,10 @@ class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
+        ),
+        'Backend\\Src\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/backend/src',
         ),
     );
 
@@ -54,6 +54,7 @@ class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
         'PHPUnit\\Event\\Code\\IssueTrigger\\IndirectTrigger' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Issue/IndirectTrigger.php',
         'PHPUnit\\Event\\Code\\IssueTrigger\\IssueTrigger' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Issue/IssueTrigger.php',
         'PHPUnit\\Event\\Code\\IssueTrigger\\SelfTrigger' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Issue/SelfTrigger.php',
+        'PHPUnit\\Event\\Code\\IssueTrigger\\TestTrigger' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Issue/TestTrigger.php',
         'PHPUnit\\Event\\Code\\IssueTrigger\\UnknownTrigger' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Issue/UnknownTrigger.php',
         'PHPUnit\\Event\\Code\\NoTestCaseObjectOnCallStackException' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Exception/NoTestCaseObjectOnCallStackException.php',
         'PHPUnit\\Event\\Code\\Phpt' => __DIR__ . '/..' . '/phpunit/phpunit/src/Event/Value/Test/Phpt.php',
@@ -1239,9 +1240,9 @@ class ComposerStaticInitf7ced11f2ceb278664dad2b162b71891
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitf7ced11f2ceb278664dad2b162b71891::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitf7ced11f2ceb278664dad2b162b71891::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitf7ced11f2ceb278664dad2b162b71891::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit4f94d63fa0ca9055c71db64f12127c9a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit4f94d63fa0ca9055c71db64f12127c9a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit4f94d63fa0ca9055c71db64f12127c9a::$classMap;
 
         }, null, ClassLoader::class);
     }

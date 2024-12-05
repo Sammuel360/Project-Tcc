@@ -2,7 +2,7 @@
     "name": "samuel/cidadaofisca",
     "autoload": {
         "psr-4": {
-            "Source\\": "Source/"
+            "Backend\\Src\\": "backend/src/"
         }
     },
     "authors": [
