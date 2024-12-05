@@ -1,36 +1,66 @@
 <?php
-
 namespace Source\Core;
 
 use PDO;
+use PDOException;
 
+/**
+ * A classe Connect é responsável por entegrar um instância do PDO
+ * 
+ * @version ${1:1.0.0
+ * @author Antonio César <antonio.magalhaes17102005@gmail.com>
+ */
 class Connect
 {
+    /**
+     *  A variável HOSTNAME foi criada com o objetivo de armazenar o nome do host.
+     */
     private const HOSTNAME = "localhost";
+    /**
+     *  A variável foi criada com o objetivo de armazenar o nome do usuário do banco.
+     */
     private const USERNAME = "root";
+    /**
+     *  A variável foi criada com o objetivo de armazenar a senha do usuário do banco.
+     */
     private const PASSWORD = "";
-    private const DBNAME = "fiscal_cidadao";
-    private static $instance;
-    public static $fail;
+    /**
+     *  A variável foi criada com o objetivo de armazenar o nome do banco.
+     */
+    private const DBNAME   = "fiscal_cidadao";
+    /**
+     *  A variável foi criada com o objetivo de armazenar a conexão e ser o ponto de acesso global com o banco.
+     * 
+     * @var PDO
+     */
+    public static $instance;
+    /**
+     *  A variável foi criada com o objetivo de armazenar a falha da conexão.
+     * 
+     * @var PDOException
+     */
+    private static $fail;
 
-    private function __construct() {}
-
-    public static function getInstance(): ?PDO
+    /**
+     * Estabelece uma conexão com o banco de dados usando o PDO
+     * 
+     * @return PDO|null Retorna uma instância do PDO se a conexão for bem-sucedida , ou null caso contrário. 
+     */
+    public static function getConn(): ?PDO
     {
-        if (empty(self::$instance)) {
-            try {
-                self::$instance = new PDO(
-                    "mysql:host=" . self::HOSTNAME . ";dbname=" . self::DBNAME,
-                    self::USERNAME,
-                    self::PASSWORD
-                );
-                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                error_log("Conexão com o banco de dados estabelecida com sucesso."); // Log para verificar a conexão bem-sucedida
-            } catch (\PDOException $exception) {
-                self::$fail = $exception;
-                error_log("Conexão falhou: " . $exception->getMessage()); // Loga o erro
-                return null; // Retorna null se a conexão falhar
+        try
+        {
+            // Verifica se não há conexão com o banco de dados, caso não tenha ele vai iniciar uma nova conexão.
+            if(empty(self::$instance)){
+                self::$instance = new PDO("mysql:dbname=".self::DBNAME.";host=".self::HOSTNAME.";",self::USERNAME,self::PASSWORD);
             }
+        }
+        // Em caso de erro na conexão, armazena-se a falha, exibe uma mensagem de erro e retorna null.
+        catch(PDOException $erro)
+        {
+            self::$fail = $erro;
+            echo "Erro na conexão com o banco de dados : ".$erro->getMessage();
+            return null;
         }
         return self::$instance;
     }

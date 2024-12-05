@@ -6,109 +6,116 @@ use Source\Models\UsuarioModel;
 
 class UsuarioController
 {
-    private $usuarioModel;
+    private $usuario;
 
     public function __construct()
     {
-        $this->usuarioModel = new UsuarioModel();
+        $this->usuario = new usuarioModel();
     }
-
-    // UsuarioController.php
-
-    public function autenticar(string $email, string $password)
+    public function viewLogIn()
     {
-        // Sanitizando o email
-        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-
-        $usuario = $this->usuarioModel->findByEmail($email);
-
-        if ($usuario && password_verify($password, $usuario->senha)) {
-            // Inicia a sessão e armazena o usuário logado
-            $_SESSION['usuario'] = $usuario;
-
-            // Redireciona para a tela principal (Dashboard) após o login
-            header("Location: /cidadaofisca/tema/admin/main.php");
-            exit;
+        //Retorna para tela de login principal do site...
+        return "tema/admin/pages/logar.php";
+    }
+    /**
+     * A função foi criada com intuito de retornar a tela 
+     * de registro do usuário
+     * 
+     * @return string O caminho da página de regitro
+     */
+    public function viewSignIn()
+    {
+        //Retorna para tela de registro do site...
+        return "tema/admin/pages/cadastroUsuario.php";
+    }
+    /**
+     * A função foi criada com intuito de retorna a tela 
+     * principal
+     * 
+     * @return string O caminho da página principal caso tenha sessão, caso não retorna a tela de login
+     */
+    public function viewMain()
+    {
+        //Verifica se existe uma sessão ativa, caso tenha retorna
+        //a tela principal
+        if (isset($_SESSION['usuario'])) {
+            return "tema/admin/pages/dashboard.php";
         }
-
-        // Mensagem de erro no login
-        $_SESSION['message'] = 'Email ou senha incorretos';
-        header("Location: /index.php?c=usuario&a=logar");  // Redireciona de volta para a página de login
-        exit;
+        //retorna o caminho da tela principal
+        //Caminho da tela de login
+        return $this->viewLogIn();
     }
-
-
-    public function inserir(array $data)
+    /**
+     * A função foi criada com o intuito de autenticar os dados 
+     * inseridos pelo usuário para dar acesso ao sistema (logar).
+     * 
+     * @return mixed O caminho do arquivo de controle de fluxo
+     * de dados e salva as informações em uma sessão, caso os 
+     * dados não tenham sido inseridos corretamente , retorna 
+     * ao controle de dados com uma mensagem de falha.
+     */
+    public function autenticar(string $email, string $senha)
     {
-        try {
-            // Sanitizando os dados de entrada
-            $nome = filter_var($data['nome'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
-            $telefone = filter_var($data['telefone'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $endereco = filter_var($data['endereco'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cidade = filter_var($data['cidade'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $estado = filter_var($data['estado'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cep = filter_var($data['cep'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $senha = $data['senha'];
+        //Busca o email inserido e retorna o objeto Usuário que tem
+        //aquele email inserido
+        $usuario = $this->usuario->findByEmail($email);
 
-            // Validação de dados
-            if (empty($nome) || !filter_var($email, FILTER_VALIDATE_EMAIL) || empty($senha)) {
-                header("Location: index.php?error=Dados inválidos.");
-                exit;
+        //Verifica se encontrou algum usuário com o email inserido,
+        //caso não encontre, retorna para a tela principal e uma 
+        //mensagem na url.
+        if ($usuario) {
+            //Verifica se a senha inserida, corresponde com a senha 
+            //do usuário 
+            if ($usuario->senha == $senha) {
+
+                //Cria um seção com o objetivo de dar persistência a 
+                //esses dados e armazenar as informações do objeto 
+                //usuário 
+                $_SESSION['usuario'] = $usuario;
+
+                //Retorna ao controle de fluxo de dados so sistema
+                header('location: index.php?c=usuario&a=main');
+            } else {
+                header("location: index.php?message=Email ou senha incorretos&typeMessage=warning");
             }
-
-            // Verificação de e-mail duplicado
-            if ($this->usuarioModel->findByEmail($email)) {
-                header("Location: index.php?error=E-mail já cadastrado.");
-                exit;
-            }
-
-            // Criptografando a senha
-            $senha = password_hash($senha, PASSWORD_DEFAULT);
-
-            // Salvando o usuário
-            if (!$this->usuarioModel->save([
-                'nome' => $nome,
-                'email' => $email,
-                'telefone' => $telefone,
-                'endereco' => $endereco,
-                'cidade' => $cidade,
-                'estado' => $estado,
-                'cep' => $cep,
-                'senha' => $senha
-            ])) {
-                header("Location: index.php?message={$this->usuarioModel->getMessage()}");
-                exit;
-            }
-            header("Location: index.php?message=Usuário cadastrado com sucesso");
-            exit;
-        } catch (\Exception $e) {
-            header("Location: index.php?error=Erro ao salvar usuário. Tente novamente.");
-            exit;
+        } else {
+            //Retorna para o controle de fluxo de dados e leva a mensagem na url
+            header("location: index.php?message=Falha na autenticacao&typeMessage={$this->usuario->getTypeMessage()}");
         }
     }
 
-    public function logar()
+    public function inserir(string $nome, string $email, string $telefone, string $senha, string $endereco, string $cidade, string $estado, string $cep)
     {
-        // Página de login
-        require 'tema/admin/logar.php';
-    }
+     // Criptografando a senha
+     $senha = password_hash($senha, PASSWORD_DEFAULT);
 
-    public function main()
-    {
-        // Verifica se o usuário está logado antes de permitir o acesso à página principal
-        if (!isset($_SESSION['usuario'])) {
-            header('Location: /index.php?c=usuario&a=logar');
-            exit;
+        //Salvar no banco de dados os valores recebidos
+        $this->usuario->nome = $nome;
+        $this->usuario->email = $email;
+        $this->usuario->telefone = $telefone;
+        $this->usuario->endereco = $endereco;
+        $this->usuario->cidade = $cidade;
+        $this->usuario->estado = $estado;
+        $this->usuario->cep = $cep;
+        $this->usuario->senha = $senha;
+        $this->usuario->save();
+
+        //Verifica se houve uma falha ou se teve algum tipo de 
+        //erro de inserção dos valores da parte do usuário
+        if ($this->usuario->getFail()) {
+            echo "Falha ao cadastrar";
+        } else {
+            //Verifica se o usuário conseguiu se cadastrar com sucesso ,
+            //caso tenha conseguido ele retorna a tela de login ,
+            //caso não ele retorna a tela de cadastro com a falha.
+            if ($this->usuario->getTypeMessage() === "sucess") {
+                //Retorna a mensagem de sucesso e o tipo da mensagem
+                header("location: index.php?message={$this->usuario->getMessage()}&typeMessage={$this->usuario->getTypeMessage()}");
+            } else {
+                //Retorna a mensagem de falha e o tipo da mensagem
+                header("location: index.php?c=usuario&a=registro&message={$this->usuario->getMessage()}&typeMessage={$this->usuario->getTypeMessage()}");
+            }
         }
-
-        // Página principal após o login
-        require 'tema/admin/main.php';  // Correção do caminho
-    }
-
-    public function cadastrar()
-    {
-        // Página de cadastro
-        require 'tema/admin/cadastroUsuario.php';  // Correção do caminho
+        return true;
     }
 }
