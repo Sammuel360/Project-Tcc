@@ -16,21 +16,31 @@ class ChamadoModel extends Model
      */
     public function save(array $data): ?bool
     {
+        // Atribuir os dados recebidos ao objeto
         $this->data = (object) $data;
 
-        // Valida os campos obrigatórios
+        // Validar os campos obrigatórios
         if (!$this->required()) {
+            $this->message = "Por favor, preencha todos os campos obrigatórios.";
             return false; // Retorna falso se a validação falhar
         }
 
-        if (!empty($this->data->id)) {
-            // Atualização de chamado
-            return $this->updateChamado();
-        } else {
-            // Inserção de novo chamado
-            return $this->insertChamado();
+        try {
+            if (!empty($this->data->id)) {
+                // Atualizar o chamado existente
+                return $this->updateChamado();
+            } else {
+                // Inserir um novo chamado
+                return $this->insertChamado();
+            }
+        } catch (\Exception $exception) {
+            // Captura e armazena a falha
+            $this->fail = $exception;
+            $this->message = "Erro ao salvar o chamado: " . $exception->getMessage();
+            return false;
         }
     }
+
 
     /**
      * Atualiza os dados de um chamado
@@ -70,33 +80,55 @@ class ChamadoModel extends Model
     /**
      * Insere um novo chamado no banco de dados
      */
-    private function insertChamado(): bool
+    public function insertChamado(): bool
     {
-        $query = "INSERT INTO {$this->table} (titulo, descricao, cep, endereco, data_hora, status, usuario_id, orgao_id)
-        VALUES (:titulo, :descricao, :cep, :endereco, :data_hora, :status, :usuario_id, :orgao_id)";
+        // Validação do formato da data_hora (caso seja fornecida)
+        if (!empty($this->data->data_hora) && !preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $this->data->data_hora)) {
+            $this->message = "Formato de data e hora inválido!";
+            return false;
+        }
 
+        // Definir data_hora para o valor atual se não for fornecido
+        $this->data->data_hora = $this->data->data_hora ?? date("Y-m-d H:i:s");
+
+        // Validação do formato do CEP (ex: 12345-678 ou 123456789)
+        if (!preg_match("/^\d{5}-\d{3}$/", $this->data->cep) && !preg_match("/^\d{8}$/", $this->data->cep)) {
+            $this->message = "CEP inválido!";
+            return false;
+        }
+
+        // Prepara a query de inserção
+        $query = "INSERT INTO {$this->table} (titulo, descricao, cep, endereco, data_hora, status, usuario_id, orgao_id)
+                  VALUES (:titulo, :descricao, :cep, :endereco, :data_hora, :status, :usuario_id, :orgao_id)";
+
+        // Define os parâmetros para a query
         $params = [
             'titulo' => $this->data->titulo,
             'descricao' => $this->data->descricao,
             'cep' => $this->data->cep,
             'endereco' => $this->data->endereco,
-            'data_hora' => $this->data->data_hora ?? date("Y-m-d H:i:s"),
+            'data_hora' => $this->data->data_hora,
             'status' => $this->data->status ?? 'pendente',
             'usuario_id' => $this->data->usuario_id,
-            'orgao_id' => $this->data->orgao_id
+            'orgao_id' => $this->data->orgao_id ?? null
         ];
 
         // Chama o método create do modelo pai, caso exista
         if (method_exists($this, 'create')) {
-            if ($this->create($query, $params)) {
-                $this->data->id = $this->getLastInsertId();
+            $insertId = $this->create($query, $params);  // Chama o método 'create'
+            if ($insertId) {
+                // Define o ID do chamado inserido
+                $this->data->id = $insertId;
                 $this->message = "Chamado cadastrado com sucesso!";
                 return true;
             }
         }
+
+        // Mensagem de erro caso a inserção falhe
         $this->message = "Erro ao cadastrar o chamado!";
         return false;
     }
+
 
     /**
      * Valida campos obrigatórios

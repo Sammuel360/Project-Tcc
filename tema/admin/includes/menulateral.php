@@ -5,7 +5,7 @@
         </div>
         <h1>Fiscal Cidadão</h1>
         <nav>
-            <a href="http://localhost/cidadaofisca/index.php?c=dashboard&a=index">🏠 Início</a>
+            <a href="http://localhost/cidadaofisca/tema/admin/main.php">🏠 Início</a>
             <a href="http://localhost/cidadaofisca/index.php?c=chamado&a=detalhesChamado">📊 Status</a>
             <a href="http://localhost/cidadaofisca/index.php?c=notificacoes&a=index">🔔 Notificações</a>
             <a href="http://localhost/cidadaofisca/index.php?c=chamado&a=abrirFormulario">📝 Chamados</a>
@@ -22,7 +22,7 @@
         <h3>Fiscal Cidadão</h3>
     </div>
     <ul class="list-unstyled components">
-        <li><a href="http://localhost/cidadaofisca/index.php?c=dashboard&a=index">🏠 Início</a></li>
+        <li><a href="http://localhost/cidadaofisca/tema/admin/main.php">🏠 Início</a></li>
         <li><a href="http://localhost/cidadaofisca/index.php?c=chamado&a=detalhesChamado">📊 Status</a></li>
         <li><a href="http://localhost/cidadaofisca/index.php?c=notificacoes&a=index">🔔 Notificações</a></li>
         <li><a href="http://localhost/cidadaofisca/index.php?c=usuario&a=perfil">👤 Perfil</a></li>

@@ -5,7 +5,12 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Abrir Chamado</title>
-        <link rel="stylesheet" href="styles.css">
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+            integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        #
+
+        <link rel="stylesheet" href="includes/menulateral.css"> <!-- CSS separado -->
         <style>
         /* Estilo do formulário */
         body {
@@ -116,25 +121,8 @@
     </head>
 
     <body>
-        <!-- Botão de alternância do menu lateral -->
-        <button id="sidebarCollapse" class="btn btn-info">☰</button>
-
-        <!-- Menu Lateral -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h3>Fiscal Cidadão</h3>
-            </div>
-            <ul class="list-unstyled components">
-                <li><a href="dashboard.php">🏠 Início</a></li>
-                <li><a href="DetalhesChamado.php">📊 Status</a></li>
-                <li><a href="#">🔔 Notificações</a></li>
-                <li><a href="perfil.php">👤 Perfil</a></li>
-                <li><a href="configuracoes.php">⚙️ Configurações</a></li>
-                <li><a href="ajuda.php">❓ Ajuda</a></li>
-                <li><a href="index.php?c=chamado&a=abrirFormulario">📝 Chamados</a></li>
-                <!-- index.php?c=chamado&a=abrirFormulario_-->
-            </ul>
-        </nav>
+        <!-- Incluir o menu lateral -->
+        <?php include_once __DIR__ . '/includes/menulateral.php'; ?>
 
         <div class="container">
             <h1>Abrir Chamado</h1>

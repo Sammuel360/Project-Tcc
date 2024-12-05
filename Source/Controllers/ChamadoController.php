@@ -5,9 +5,6 @@ namespace Source\Controllers;
 use Source\Models\ChamadoModel;
 use Source\Models\OrgaoModel;
 
-require_once __DIR__ . '/../Models/ChamadoModel.php';
-require_once __DIR__ . '/../Models/OrgaoModel.php';
-
 class ChamadoController
 {
     private $model;
@@ -39,31 +36,30 @@ class ChamadoController
     public function inserir()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Obtém os dados do formulário
+            // Sanitização dos dados de entrada
             $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $cep = filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $endereco = filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $orgao_id = filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT);
 
-            // Verifica se o usuário está logado
+            // Verificar se o usuário está logado
             if (!isset($_SESSION['usuario_id'])) {
                 $_SESSION['message'] = 'Você precisa estar logado para abrir um chamado!';
                 header('Location: index.php?c=login');
                 exit();
             }
 
-            // O ID do usuário logado será obtido da sessão
             $usuario_id = $_SESSION['usuario_id'];
 
-            // Verifica se os campos obrigatórios foram preenchidos
+            // Validar os campos obrigatórios
             if (empty($titulo) || empty($descricao) || empty($cep) || empty($endereco) || empty($orgao_id)) {
                 $_SESSION['message'] = 'Por favor, preencha todos os campos obrigatórios!';
                 header('Location: index.php?c=chamado&a=abrirFormulario');
                 exit();
             }
 
-            // Verifica se o órgão existe
+            // Validar se o órgão selecionado existe
             $orgao = $this->orgaoModel->findById($orgao_id);
             if (!$orgao) {
                 $_SESSION['message'] = 'Órgão inválido!';
@@ -71,34 +67,38 @@ class ChamadoController
                 exit();
             }
 
-            // Dados para inserir no banco de dados
+            // Preparar os dados para salvar
             $data = [
                 'titulo' => $titulo,
                 'descricao' => $descricao,
                 'cep' => $cep,
                 'endereco' => $endereco,
-                'usuario_id' => $usuario_id, // O ID do usuário logado
+                'usuario_id' => $usuario_id,
                 'orgao_id' => $orgao_id,
-                'status' => 'pendente',  // O status padrão é 'pendente'
+                'status' => 'pendente',
                 'data_hora' => date('Y-m-d H:i:s')
             ];
 
-            // Tenta salvar o chamado
-            if ($this->model->save($data)) {
-                $lastInsertId = $this->model->getLastInsertId(); // Pegando o ID do último chamado inserido
+            // Atribui os dados ao objeto do modelo
+            // Atribui os dados ao objeto do modelo
+            $this->model->data = (object)$data;
+
+            // Verifica se o método 'insertChamado' existe e chama
+            if (method_exists($this->model, 'insertChamado') && $this->model->insertChamado()) {
+                // Sucesso
                 $_SESSION['message'] = 'Chamado aberto com sucesso!';
-                header("Location: index.php?c=chamado&a=detalhes&id=$lastInsertId");
-                exit();
+                header('Location: index.php?c=chamado&a=detalhes&id=' . $this->model->data->id);
             } else {
-                $_SESSION['message'] = 'Erro ao salvar o chamado. Tente novamente.';
+                // Falha
+                $_SESSION['message'] = $this->model->message ?? 'Erro ao abrir o chamado!';
                 header('Location: index.php?c=chamado&a=abrirFormulario');
-                exit();
             }
         }
-
-        // Chama o formulário de abertura de chamados
-        $this->abrirFormulario();
     }
+
+
+
+
 
 
     public function detalhes()
