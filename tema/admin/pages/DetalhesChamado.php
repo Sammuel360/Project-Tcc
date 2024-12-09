@@ -1,25 +1,32 @@
 <?php
-// A view espera receber as variáveis $chamado e $statusList do controlador
+// Detalhes do chamado
+$chamadoId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+if ($chamadoId) {
+    // Carregar os dados do chamado a partir do banco de dados usando o $chamadoId
+    // Exemplo: consulta ao banco de dados (ajustar conforme o seu banco de dados)
+    $chamado = carregarChamadoPorId($chamadoId); // Função fictícia que carrega os dados do chamado
+    $statusList = carregarHistoricoStatus($chamadoId); // Função fictícia que carrega o histórico de status
+}
 
-// Definindo dados para o gráfico baseado no status atual do chamado
+// Inicializando o array para contar os status
 $statusCounts = [
     'pendente' => 0,
     'em_progresso' => 0,
     'concluido' => 0
 ];
 
-// Supondo que o status atual é o último status registrado
+// Verifica se a lista de status não está vazia e realiza a contagem
 if (!empty($statusList)) {
     foreach ($statusList as $status) {
         switch ($status['status']) {
             case 'pendente':
-                $statusCounts['pendente'] += 1;
+                $statusCounts['pendente']++;
                 break;
             case 'em_progresso':
-                $statusCounts['em_progresso'] += 1;
+                $statusCounts['em_progresso']++;
                 break;
             case 'concluido':
-                $statusCounts['concluido'] += 1;
+                $statusCounts['concluido']++;
                 break;
         }
     }
@@ -58,6 +65,18 @@ if (!empty($statusList)) {
                     <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado['descricao'])); ?></p>
                 </div>
             </div>
+            <div class="card col-md-8 mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Cep</h5>
+                    <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado['cep'])); ?></p>
+                </div>
+            </div>
+            <div class="card col-md-8 mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Endereço</h5>
+                    <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado['endereco'])); ?></p>
+                </div>
+            </div>
             <div class="card col-md-4 mb-3">
                 <div class="card-body">
                     <h5 class="card-title">Status Atual</h5>
@@ -88,17 +107,17 @@ if (!empty($statusList)) {
         <section class="historico-status-section mb-4">
             <h3>Histórico de Status</h3>
             <?php if (!empty($statusList)): ?>
-            <ul class="list-group">
-                <?php foreach ($statusList as $status): ?>
-                <li class="list-group-item">
-                    <strong>Status:</strong> <?= htmlspecialchars(ucfirst($status['status'])) ?><br>
-                    <strong>Observação:</strong> <?= htmlspecialchars($status['observacao']) ?><br>
-                    <strong>Data:</strong> <?= date('d/m/Y H:i:s', strtotime($status['created_at'])) ?>
-                </li>
-                <?php endforeach; ?>
-            </ul>
+                <ul class="list-group">
+                    <?php foreach ($statusList as $status): ?>
+                        <li class="list-group-item">
+                            <strong>Status:</strong> <?= htmlspecialchars(ucfirst($status['status'])) ?><br>
+                            <strong>Observação:</strong> <?= htmlspecialchars($status['observacao']) ?><br>
+                            <strong>Data:</strong> <?= date('d/m/Y H:i:s', strtotime($status['created_at'])) ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
             <?php else: ?>
-            <p>Não há registros de status para este chamado.</p>
+                <p>Não há registros de status para este chamado.</p>
             <?php endif; ?>
         </section>
 
@@ -110,9 +129,12 @@ if (!empty($statusList)) {
                     <label for="status">Status</label>
                     <select name="status" id="status" class="form-control" required>
                         <option value="">Selecione um status</option>
-                        <option value="pendente">Pendente</option>
-                        <option value="em_progresso">Em Progresso</option>
-                        <option value="concluido">Concluído</option>
+                        <option value="pendente" <?php echo $chamado['status'] == 'pendente' ? 'selected' : ''; ?>>
+                            Pendente</option>
+                        <option value="em_progresso"
+                            <?php echo $chamado['status'] == 'em_progresso' ? 'selected' : ''; ?>>Em Progresso</option>
+                        <option value="concluido" <?php echo $chamado['status'] == 'concluido' ? 'selected' : ''; ?>>
+                            Concluído</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -126,20 +148,20 @@ if (!empty($statusList)) {
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-    const ctx = document.getElementById('statusChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Pendente', 'Em Progresso', 'Concluído'],
-            datasets: [{
-                data: [<?php echo $statusCounts['pendente']; ?>,
-                    <?php echo $statusCounts['em_progresso']; ?>,
-                    <?php echo $statusCounts['concluido']; ?>
-                ],
-                backgroundColor: ['#ff6384', '#36a2eb', '#4caf50'],
-            }]
-        }
-    });
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Pendente', 'Em Progresso', 'Concluído'],
+                datasets: [{
+                    data: [<?php echo $statusCounts['pendente']; ?>,
+                        <?php echo $statusCounts['em_progresso']; ?>,
+                        <?php echo $statusCounts['concluido']; ?>
+                    ],
+                    backgroundColor: ['#ff6384', '#36a2eb', '#4caf50'],
+                }]
+            }
+        });
     </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

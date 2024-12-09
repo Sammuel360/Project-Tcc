@@ -3,194 +3,88 @@
 namespace Source\Models;
 
 use Source\Core\Model;
-use Source\Core\Connect;
-
-require_once __DIR__ . '/../Core/Model.php';
 
 class ChamadoModel extends Model
 {
-    protected $table = 'chamados'; // Nome da tabela
+    protected static $entity = 'chamados'; // Nome da tabela
+    protected static $primaryKey = 'id'; // Chave primária
 
     /**
-     * Salva ou atualiza um chamado no banco de dados
+     * Método para inserir um novo chamado no banco de dados
      */
-    public function save(array $data): ?bool
+    public function inserirChamado(array $data): ?ChamadoModel
     {
-        // Atribuir os dados recebidos ao objeto
         $this->data = (object) $data;
-
-        // Validar os campos obrigatórios
+        // Obtenha o ID do usuário logado (exemplo usando sessão)
+        if (isset($_SESSION['usuario_id'])) {
+            $this->data->usuario_id = $_SESSION['usuario_id'];
+        } else {
+            $this->message = "Usuário não está logado.";
+            return null;
+        }
+        // Verifica se os campos obrigatórios estão preenchidos
         if (!$this->required()) {
-            $this->message = "Por favor, preencha todos os campos obrigatórios.";
-            return false; // Retorna falso se a validação falhar
-        }
-
-        try {
-            if (!empty($this->data->id)) {
-                // Atualizar o chamado existente
-                return $this->updateChamado();
-            } else {
-                // Inserir um novo chamado
-                return $this->insertChamado();
-            }
-        } catch (\Exception $exception) {
-            // Captura e armazena a falha
-            $this->fail = $exception;
-            $this->message = "Erro ao salvar o chamado: " . $exception->getMessage();
-            return false;
-        }
-    }
-
-
-    /**
-     * Atualiza os dados de um chamado
-     */
-    private function updateChamado(): bool
-    {
-        $query = "UPDATE {$this->table} SET
-            titulo = :titulo,
-            descricao = :descricao,
-            cep = :cep,
-            endereco = :endereco,
-            data_hora = :data_hora,
-            status = :status,
-            usuario_id = :usuario_id,
-            orgao_id = :orgao_id
-        WHERE id = :id";
-
-        $params = [
-            'titulo' => $this->data->titulo,
-            'descricao' => $this->data->descricao,
-            'cep' => $this->data->cep,
-            'endereco' => $this->data->endereco,
-            'data_hora' => $this->data->data_hora ?? date("Y-m-d H:i:s"),
-            'status' => $this->data->status ?? 'pendente',
-            'usuario_id' => $this->data->usuario_id,
-            'orgao_id' => $this->data->orgao_id,
-            'id' => $this->data->id
-        ];
-
-        // Chama o método update do modelo pai, caso exista
-        if (method_exists($this, 'update')) {
-            return $this->update($query, $params);
-        }
-        return false; // Caso o método não exista no modelo pai
-    }
-
-    /**
-     * Insere um novo chamado no banco de dados
-     */
-    public function insertChamado(): bool
-    {
-        // Validação do formato da data_hora (caso seja fornecida)
-        if (!empty($this->data->data_hora) && !preg_match("/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/", $this->data->data_hora)) {
-            $this->message = "Formato de data e hora inválido!";
-            return false;
-        }
-
-        // Definir data_hora para o valor atual se não for fornecido
-        $this->data->data_hora = $this->data->data_hora ?? date("Y-m-d H:i:s");
-
-        // Validação do formato do CEP (ex: 12345-678 ou 123456789)
-        if (!preg_match("/^\d{5}-\d{3}$/", $this->data->cep) && !preg_match("/^\d{8}$/", $this->data->cep)) {
-            $this->message = "CEP inválido!";
-            return false;
+            return null;
         }
 
         // Prepara a query de inserção
-        $query = "INSERT INTO {$this->table} (titulo, descricao, cep, endereco, data_hora, status, usuario_id, orgao_id)
-                  VALUES (:titulo, :descricao, :cep, :endereco, :data_hora, :status, :usuario_id, :orgao_id)";
-
-        // Define os parâmetros para a query
-        $params = [
+        $query = "INSERT INTO " . self::$entity . " (titulo, descricao, cep, endereco, usuario_id, orgao_id, data_abertura) VALUES (:titulo, :descricao, :cep, :endereco, :usuario_id, :orgao_id, :data_abertura)";
+        $params = http_build_query([
             'titulo' => $this->data->titulo,
             'descricao' => $this->data->descricao,
             'cep' => $this->data->cep,
             'endereco' => $this->data->endereco,
-            'data_hora' => $this->data->data_hora,
-            'status' => $this->data->status ?? 'pendente',
             'usuario_id' => $this->data->usuario_id,
-            'orgao_id' => $this->data->orgao_id ?? null
-        ];
+            'orgao_id' => $this->data->orgao_id,
+            'data_abertura' => date('Y-m-d H:i:s')
+        ]);
 
-        // Chama o método create do modelo pai, caso exista
-        if (method_exists($this, 'create')) {
-            $insertId = $this->create($query, $params);  // Chama o método 'create'
-            if ($insertId) {
-                // Define o ID do chamado inserido
-                $this->data->id = $insertId;
-                $this->message = "Chamado cadastrado com sucesso!";
-                return true;
-            }
+        // Executa a query de inserção
+        if ($this->create($query, $params)) {
+            return $this;
+        } else {
+            $this->message = "Erro ao inserir chamado.";
+            return null;
         }
-
-        // Mensagem de erro caso a inserção falhe
-        $this->message = "Erro ao cadastrar o chamado!";
-        return false;
-    }
-
-
-    /**
-     * Valida campos obrigatórios
-     */
-    private function required(): bool
-    {
-        if (empty($this->data->titulo) || empty($this->data->descricao) || empty($this->data->cep) || empty($this->data->endereco)) {
-            $this->message = "Campos obrigatórios estão faltando!";
-            return false;
-        }
-        return true;
     }
 
     /**
-     * Lista todos os chamados com limite e offset
-     */
-    public function listAll(int $limit = 10, int $offset = 0): ?array
-    {
-        $query = "SELECT * FROM {$this->table} LIMIT :limit OFFSET :offset";
-        $params = [
-            'limit' => $limit,
-            'offset' => $offset
-        ];
-
-        $stmt = $this->read($query, $params);
-        return $stmt ? $stmt->fetchAll(\PDO::FETCH_ASSOC) : null;
-    }
-
-    /**
-     * Encontra um chamado pelo ID
+     * Método para buscar um chamado por ID
      */
     public function findById(int $id): ?ChamadoModel
     {
-        $query = "SELECT * FROM {$this->table} WHERE id = :id";
-        $params = ['id' => $id];
+        // Prepara a consulta para buscar um chamado pela chave primária
+        $query = "SELECT * FROM " . self::$entity . " WHERE " . self::$primaryKey . " = :id";
+
+        // Define os parâmetros como um array associativo
+        $params = [':id' => $id];
+
+        // Executa a consulta e obtém o resultado
         $stmt = $this->read($query, $params);
+
+        // Verifica se a consulta retornou resultados
         if ($stmt && $stmt->rowCount()) {
             return $stmt->fetchObject(__CLASS__);
-        }
-        return null;
-    }
-
-    /**
-     * Exclui um chamado pelo ID
-     */
-    public function deleteById(int $id): bool
-    {
-        $query = "DELETE FROM {$this->table} WHERE id = :id";
-        $params = ['id' => $id];
-        return $this->delete($query, $params);
-    }
-
-    /**
-     * Retorna o último ID inserido
-     */
-    public function getLastInsertId()
-    {
-        $pdo = Connect::getInstance();
-        if (!$pdo) {
-            $this->message = "Erro na conexão com o banco!";
+        } else {
+            // Caso não encontre o chamado, define a mensagem e retorna null
+            $this->message = "Chamado não encontrado.";
             return null;
         }
-        return $pdo->lastInsertId();
+    }
+
+
+    // Outros métodos...
+
+    /**
+     * Método para verificar campos obrigatórios
+     */
+    private function required(): bool
+    {
+        // Verifique seus campos obrigatórios aqui
+        if (empty($this->data->titulo) || empty($this->data->descricao) || empty($this->data->usuario_id) || empty($this->data->orgao_id)) {
+            $this->message = "Campos obrigatórios faltando!";
+            return false;
+        }
+        return true;
     }
 }

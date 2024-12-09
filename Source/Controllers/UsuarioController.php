@@ -6,109 +6,117 @@ use Source\Models\UsuarioModel;
 
 class UsuarioController
 {
-    private $usuarioModel;
+    private $usuario;
 
     public function __construct()
     {
-        $this->usuarioModel = new UsuarioModel();
+        $this->usuario = new UsuarioModel();
     }
 
-    // UsuarioController.php
-
-    public function autenticar(string $email, string $password)
+    private function redirectWithMessage($location, $message, $type)
     {
-        // Sanitizando o email
-        $email = filter_var($email, FILTER_SANITIZE_EMAIL);
-
-        $usuario = $this->usuarioModel->findByEmail($email);
-
-        if ($usuario && password_verify($password, $usuario->senha)) {
-            // Inicia a sessão e armazena o usuário logado
-            $_SESSION['usuario'] = $usuario;
-
-            // Redireciona para a tela principal (Dashboard) após o login
-            header("Location: /cidadaofisca/tema/admin/main.php");
-            exit;
-        }
-
-        // Mensagem de erro no login
-        $_SESSION['message'] = 'Email ou senha incorretos';
-        header("Location: /index.php?c=usuario&a=logar");  // Redireciona de volta para a página de login
+        header("location: $location?message=$message&typeMessage=$type");
         exit;
-    }
-
-
-    public function inserir(array $data)
-    {
-        try {
-            // Sanitizando os dados de entrada
-            $nome = filter_var($data['nome'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
-            $telefone = filter_var($data['telefone'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $endereco = filter_var($data['endereco'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cidade = filter_var($data['cidade'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $estado = filter_var($data['estado'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cep = filter_var($data['cep'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $senha = $data['senha'];
-
-            // Validação de dados
-            if (empty($nome) || !filter_var($email, FILTER_VALIDATE_EMAIL) || empty($senha)) {
-                header("Location: index.php?error=Dados inválidos.");
-                exit;
-            }
-
-            // Verificação de e-mail duplicado
-            if ($this->usuarioModel->findByEmail($email)) {
-                header("Location: index.php?error=E-mail já cadastrado.");
-                exit;
-            }
-
-            // Criptografando a senha
-            $senha = password_hash($senha, PASSWORD_DEFAULT);
-
-            // Salvando o usuário
-            if (!$this->usuarioModel->save([
-                'nome' => $nome,
-                'email' => $email,
-                'telefone' => $telefone,
-                'endereco' => $endereco,
-                'cidade' => $cidade,
-                'estado' => $estado,
-                'cep' => $cep,
-                'senha' => $senha
-            ])) {
-                header("Location: index.php?message={$this->usuarioModel->getMessage()}");
-                exit;
-            }
-            header("Location: index.php?message=Usuário cadastrado com sucesso");
-            exit;
-        } catch (\Exception $e) {
-            header("Location: index.php?error=Erro ao salvar usuário. Tente novamente.");
-            exit;
-        }
     }
 
     public function logar()
     {
-        // Página de login
-        require 'tema/admin/logar.php';
-    }
-
-    public function main()
-    {
-        // Verifica se o usuário está logado antes de permitir o acesso à página principal
-        if (!isset($_SESSION['usuario'])) {
-            header('Location: /index.php?c=usuario&a=logar');
-            exit;
-        }
-
-        // Página principal após o login
-        require 'tema/admin/main.php';  // Correção do caminho
+        return "tema/admin/pages/logar.php";
     }
 
     public function cadastrar()
     {
-        // Página de cadastro
-        require 'tema/admin/cadastroUsuario.php';  // Correção do caminho
+        return "tema/admin/pages/cadastroUsuario.php";
+    }
+
+    public function viewMain()
+    {
+        if (isset($_SESSION['usuario'])) {
+            return "tema/admin/pages/main.php";
+        }
+        return $this->logar();
+    }
+    public function autenticar(string $email, string $senha)
+    {
+        session_start(); // Começando a sessão
+
+        // Validando e sanitizando o e-mail
+        $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            $this->redirectWithMessage('index.php', 'E-mail inválido', 'warning');
+        }
+
+        // Depuração: Exibindo o e-mail antes da consulta
+        var_dump($email); // Verifica se o e-mail está correto
+
+        // Buscando o usuário pelo email
+        $usuario = $this->usuario->findByEmail($email);
+
+        // Depuração: Exibindo os dados do usuário ou NULL
+        var_dump($usuario); // Verifica se o usuário foi encontrado no banco de dados
+
+        // Verificando se o usuário foi encontrado e se a senha está correta
+        if (!$usuario) {
+            $this->redirectWithMessage('index.php', 'E-mail não encontrado', 'warning');
+        }
+
+        if (!password_verify($senha, $usuario->senha)) {
+            $this->redirectWithMessage('index.php', 'Senha incorreta', 'warning');
+        }
+
+        // Se o usuário for encontrado e a senha for válida
+        $_SESSION['usuario'] = $usuario;
+        header('location: index.php?c=usuario&a=main');
+        exit;
+    }
+
+
+    public function registrarUsuario(string $nome, string $email, string $telefone, string $senha, string $endereco, string $cidade, string $estado, string $cep)
+    {
+        // Verificando se todos os campos estão preenchidos
+        if (empty($nome) || empty($email) || empty($telefone) || empty($senha) || empty($endereco) || empty($cidade) || empty($estado) || empty($cep)) {
+            $this->redirectWithMessage('index.php', 'Preencha todos os campos', 'warning');
+        }
+
+        // Validando o e-mail
+        $email = filter_var($email, FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            $this->redirectWithMessage('index.php', 'E-mail inválido', 'warning');
+        }
+
+        // Criptografando a senha
+        $senha = password_hash($senha, PASSWORD_DEFAULT);
+
+        // Preenchendo as propriedades do usuário
+        $this->usuario->nome = $nome;
+        $this->usuario->email = $email;
+        $this->usuario->telefone = $telefone;
+        $this->usuario->endereco = $endereco;
+        $this->usuario->cidade = $cidade;
+        $this->usuario->estado = $estado;
+        $this->usuario->cep = $cep;
+        $this->usuario->senha = $senha;
+
+        // Salvando no banco de dados
+        $this->usuario->save();
+
+        // Verificando falhas e redirecionando com mensagens
+        if ($this->usuario->getFail()) {
+            $this->redirectWithMessage('index.php', 'Falha ao cadastrar', 'error');
+        } else {
+            $this->redirectWithMessage('index.php', 'Cadastro realizado com sucesso', 'success');
+        }
+
+        return true;
+    }
+
+    public function main()
+    {
+        if (isset($_SESSION['usuario'])) {
+            var_dump($_SESSION['usuario']);
+            include "tema/admin/pages/main.php";
+        } else {
+            header('location: index.php?c=usuario&a=logar');
+        }
     }
 }

@@ -1,17 +1,12 @@
-    <!DOCTYPE html>
-    <html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Abrir Chamado</title>
-
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-            integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        #
-
-        <link rel="stylesheet" href="includes/menulateral.css"> <!-- CSS separado -->
-        <style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abrir Chamado</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
         /* Estilo do formulário */
         body {
             font-family: Arial, sans-serif;
@@ -117,62 +112,79 @@
         #content.shifted {
             margin-left: 270px;
         }
-        </style>
-    </head>
+    </style>
+</head>
 
-    <body>
-        <!-- Incluir o menu lateral -->
-        <?php include_once __DIR__ . '/includes/menulateral.php'; ?>
+<body>
+    <!-- Botão de alternância do menu lateral -->
+    <button id="sidebarCollapse" class="btn btn-info">☰</button>
 
-        <div class="container">
-            <h1>Abrir Chamado</h1>
+    <!-- Menu Lateral -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Fiscal Cidadão</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li><a href="dashboard.php">🏠 Início</a></li>
+            <li><a href="DetalhesChamado.php">📊 Status</a></li>
+            <li><a href="#">🔔 Notificações</a></li>
+            <li><a href="perfil.php">👤 Perfil</a></li>
+            <li><a href="configuracoes.php">⚙️ Configurações</a></li>
+            <li><a href="ajuda.php">❓ Ajuda</a></li>
+            <li><a href="index.php?c=chamado&a=abrirFormulario">📝 Chamados</a></li>
+            <!-- index.php?c=chamado&a=abrirFormulario_-->
+        </ul>
+    </nav>
 
-            <?php if (!empty($_SESSION['message'])): ?>
+    <div class="container">
+        <h1>Abrir Chamado</h1>
+
+        <?php if (!empty($_SESSION['message'])): ?>
             <div class="alert">
                 <?= $_SESSION['message']; ?>
                 <?php unset($_SESSION['message']); ?>
             </div>
-            <?php endif; ?>
+        <?php endif; ?>
 
-            <form action="index.php?c=chamado&a=inserir" method="POST">
-                <label for="titulo">Título:</label>
-                <input type="text" name="titulo" id="titulo" required>
+        <form action="index.php?c=chamado&a=inserir" method="POST">
+            <label for="titulo">Título:</label>
+            <input type="text" name="titulo" id="titulo" required>
 
-                <label for="descricao">Descrição:</label>
-                <textarea name="descricao" id="descricao" required></textarea>
+            <label for="descricao">Descrição:</label>
+            <textarea name="descricao" id="descricao" required></textarea>
 
-                <label for="cep">CEP:</label>
-                <input type="text" name="cep" id="cep" required>
+            <label for="cep">CEP:</label>
+            <input type="text" name="cep" id="cep" required>
 
-                <label for="endereco">Endereço:</label>
-                <input type="text" name="endereco" id="endereco" required>
+            <label for="endereco">Endereço:</label>
+            <input type="text" name="endereco" id="endereco" required>
 
-                <label for="orgao_id">Órgão Responsável:</label>
-                <select name="orgao_id" id="orgao_id" required>
-                    <option value="">Selecione o órgão</option>
-                    <?php
-                    if (isset($_SESSION['orgaos']) && !empty($_SESSION['orgaos'])) {
-                        $orgaos = $_SESSION['orgaos'];
-                        foreach ($orgaos as $orgao) {
-                    ?>
-                    <option value="<?= htmlspecialchars($orgao->id); ?>">
-                        <?= htmlspecialchars($orgao->nome); ?>
-                    </option>
-                    <?php
-                        }
-                    }
-                    ?>
-
-
-                </select>
+            <label for="orgao_id">Órgão Responsável:</label>
+            <select name="orgao_id" id="orgao_id">
+                <option value="">Selecione o órgão</option>
+                <?php
+                // Verifica se os dados de órgãos estão na sessão
+                if (isset($_SESSION['orgaos']) && !empty($_SESSION['orgaos'])):
+                    // Recupera os órgãos da sessão
+                    $orgaos = $_SESSION['orgaos'];
+                    foreach ($orgaos as $orgao):
+                ?>
+                        <option value="<?= $orgao['id'] ?>"><?= htmlspecialchars($orgao['nome']) ?></option>
+                <?php
+                    endforeach;
+                endif;
+                ?>
+            </select>
 
 
-                <button type="submit" class="button">Abrir Chamado</button>
-            </form>
 
 
-        </div>
-        <script>
+            <button type="submit" class="button">Abrir Chamado</button>
+        </form>
+
+
+    </div>
+    <script>
         // Alterna a classe active para mostrar/ocultar o menu lateral
         document.getElementById("sidebarCollapse").onclick = function() {
             var sidebar = document.getElementById("sidebar");
@@ -180,8 +192,8 @@
             sidebar.classList.toggle("active");
             content.classList.toggle("shifted");
         };
-        </script>
+    </script>
 
-    </body>
+</body>
 
-    </html>
+</html>

@@ -1,83 +1,29 @@
-
-
-/* Menu lateral */
-#sidebar {
-    height: 100%;
+/* sidebar.css */
+.main-sidebar {
     width: 260px;
     position: fixed;
     top: 0;
-    left: -260px;
+    left: 0;
+    height: 100%;
     background-color: #1e293b;
     color: white;
-    z-index: 1000;
-    padding-top: 20px;
-    transition: all 0.3s;
+    overflow: auto;
 }
 
-#sidebar.active {
-    left: 0; /* Ativa o menu lateral */
-}
-
-#sidebar .sidebar-header {
-    padding: 20px;
+.brand-link {
+    text-align: center;
+    padding: 1rem;
+    font-size: 1.2rem;
     background-color: #2563eb;
-    font-size: 1.3rem;
 }
 
-#sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-#sidebar ul li a {
+.nav-sidebar .nav-item > .nav-link {
     color: white;
-    padding: 15px 20px;
-    display: block;
-    text-decoration: none;
-    font-size: 1.1rem;
+    padding: 0.75rem;
 }
 
-#sidebar ul li a:hover {
+.nav-sidebar .nav-item > .nav-link.active,
+.nav-sidebar .nav-item > .nav-link:hover {
     background-color: #2563eb;
-    border-radius: 5px;
+    border-radius: 0.25rem;
 }
-
-/* Botão de colapso do menu lateral */
-#sidebarCollapse {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 1050;
-    background-color: #17a2b8;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    header .top-bar nav {
-        display: none; /* Esconde os links de navegação na barra superior */
-    }
-
-    header .top-bar .menu-button-container {
-        display: block; /* Mostra o botão de menu */
-    }
-
-    #sidebar {
-        width: 100%; /* Largura total em telas pequenas */
-        position: relative;
-    }
-
-    #content {
-        margin-left: 0;
-    }
-
-    #sidebarCollapse {
-        display: block; /* Exibe o botão de colapso */
-    }
-}
-

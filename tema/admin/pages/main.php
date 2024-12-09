@@ -1,7 +1,8 @@
-// tema/admin/main.php
 <?php
 // Iniciar a sessão para verificar se o usuário está logado
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Verificar se o usuário está logado
 if (!isset($_SESSION['usuario'])) {
@@ -10,7 +11,8 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 // Incluir o menu lateral
-include_once 'includes/menulateral.php';
+include_once __DIR__ . '/../includes/menulateral.php'
+
 ?>
 
 <!DOCTYPE html>
@@ -20,10 +22,11 @@ include_once 'includes/menulateral.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Fiscal Cidadão</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-        integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOM7PylkiF5jcswrT+YEoix1lL5fN5KVVlfp0i8b" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="includes/menulateral.css">
-    <link rel="stylesheet" href="includes/dashboard.css"> <!-- Estilo do Dashboard -->
+
 </head>
 
 <body>

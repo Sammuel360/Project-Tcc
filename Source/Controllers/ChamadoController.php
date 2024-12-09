@@ -7,100 +7,84 @@ use Source\Models\OrgaoModel;
 
 class ChamadoController
 {
-    private $model;
+    private $chamadoModel;
     private $orgaoModel;
 
-    public function __construct()
+
+    public function __construct(ChamadoModel $chamadoModel, OrgaoModel $orgaoModel)
     {
-        $this->model = new ChamadoModel();
-        $this->orgaoModel = new OrgaoModel();  // Agora estamos instanciando o OrgaoModel corretamente
+
+        // Injeção de dependência dos modelos
+        $this->chamadoModel = $chamadoModel;
+        $this->orgaoModel = $orgaoModel;
     }
 
+    /**
+     * Exibe o formulário para abrir um novo chamado, passando os órgãos disponíveis.
+     *
+     * @return void
+     */
     public function abrirFormulario(): void
     {
         try {
+
+
             // Obtém os órgãos do banco
-            $orgaos = $this->orgaoModel->listarTodos();
+            $orgaos = $this->orgaoModel->listarOrgao();
+
 
             // Armazena os órgãos na sessão para a view
             $_SESSION['orgaos'] = $orgaos;
 
             // Inclui a view com os dados dos órgãos
-            require_once __DIR__ . '/../../tema/admin/chamados.php';
+            require_once __DIR__ . '/../../tema/admin/pages/chamados.php';
         } catch (\Exception $e) {
             // Exibe uma mensagem de erro genérica (substituir por logging em produção)
             echo "Erro ao carregar formulário: " . $e->getMessage();
         }
     }
 
+    /**
+     * Insere um novo chamado no banco de dados.
+     *
+     * @return void
+     */
     public function inserir()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Sanitização dos dados de entrada
-            $titulo = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $cep = filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $endereco = filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $orgao_id = filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT);
+            // Validação dos dados recebidos
+            $dadosChamado = $this->validarDadosChamado();
 
-            // Verificar se o usuário está logado
-            if (!isset($_SESSION['usuario_id'])) {
-                $_SESSION['message'] = 'Você precisa estar logado para abrir um chamado!';
-                header('Location: index.php?c=login');
-                exit();
-            }
-
-            $usuario_id = $_SESSION['usuario_id'];
-
-            // Validar os campos obrigatórios
-            if (empty($titulo) || empty($descricao) || empty($cep) || empty($endereco) || empty($orgao_id)) {
-                $_SESSION['message'] = 'Por favor, preencha todos os campos obrigatórios!';
+            // Se algum dado for inválido, redireciona para o formulário
+            if (!$dadosChamado) {
                 header('Location: index.php?c=chamado&a=abrirFormulario');
                 exit();
             }
 
-            // Validar se o órgão selecionado existe
-            $orgao = $this->orgaoModel->findById($orgao_id);
-            if (!$orgao) {
-                $_SESSION['message'] = 'Órgão inválido!';
-                header('Location: index.php?c=chamado&a=abrirFormulario');
-                exit();
-            }
+            // Chama o método de inserção no modelo
+            $novoChamado = $this->chamadoModel->inserirChamado($dadosChamado);
 
-            // Preparar os dados para salvar
-            $data = [
-                'titulo' => $titulo,
-                'descricao' => $descricao,
-                'cep' => $cep,
-                'endereco' => $endereco,
-                'usuario_id' => $usuario_id,
-                'orgao_id' => $orgao_id,
-                'status' => 'pendente',
-                'data_hora' => date('Y-m-d H:i:s')
-            ];
-
-            // Atribui os dados ao objeto do modelo
-            // Atribui os dados ao objeto do modelo
-            $this->model->data = (object)$data;
-
-            // Verifica se o método 'insertChamado' existe e chama
-            if (method_exists($this->model, 'insertChamado') && $this->model->insertChamado()) {
-                // Sucesso
+            // Verifica o sucesso da inserção
+            if ($novoChamado) {
                 $_SESSION['message'] = 'Chamado aberto com sucesso!';
-                header('Location: index.php?c=chamado&a=detalhes&id=' . $this->model->data->id);
+                header('Location: index.php?c=chamado&a=detalhes&id=' . $novoChamado->id);
             } else {
-                // Falha
-                $_SESSION['message'] = $this->model->message ?? 'Erro ao abrir o chamado!';
+                $_SESSION['message'] = $this->chamadoModel->getMessage() ?? 'Erro ao salvar o chamado.';
                 header('Location: index.php?c=chamado&a=abrirFormulario');
             }
+            exit();
         }
+
+        // Redireciona de volta ao formulário caso o método não seja POST
+        header('Location: index.php?c=chamado&a=abrirFormulario');
+        exit();
     }
 
-
-
-
-
-
+    /**
+     * Exibe os detalhes de um chamado específico.
+     *
+     * @return string Caminho da view de detalhes do chamado.
+     */
     public function detalhes()
     {
         $idChamado = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -111,8 +95,7 @@ class ChamadoController
             exit();
         }
 
-        // Busca o chamado pelo ID
-        $chamado = $this->model->findById($idChamado);
+        $chamado = $this->chamadoModel->findById($idChamado);
 
         if (!$chamado) {
             $_SESSION['message'] = 'Chamado não encontrado!';
@@ -120,7 +103,34 @@ class ChamadoController
             exit();
         }
 
-        // Exibe os detalhes do chamado
-        require __DIR__ . '/../../tema/admin/DetalhesChamado.php';
+        $_SESSION['chamado'] = $chamado; // Passa os detalhes do chamado para a sessão
+        return "tema/admin/pages/DetalhesChamado.php";
+    }
+
+    /**
+     * Valida os dados do chamado recebidos do formulário.
+     *
+     * @return array|false Dados válidos ou false em caso de erro
+     */
+    private function validarDadosChamado()
+    {
+        $dadosChamado = [
+            'titulo' => filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'descricao' => filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'cep' => filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_NUMBER_INT),
+            'endereco' => filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'usuario_id' => $_SESSION['usuario_id'] ?? null, // Pega o ID do usuário da sessão
+            'orgao_id' => filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT),
+        ];
+
+        // Verifica se há campos obrigatórios vazios
+        foreach ($dadosChamado as $campo => $valor) {
+            if (empty($valor)) {
+                $_SESSION['message'] = "O campo '$campo' é obrigatório.";
+                return false; // Retorna falso caso algum campo esteja vazio
+            }
+        }
+
+        return $dadosChamado;
     }
 }

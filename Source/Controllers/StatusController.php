@@ -24,8 +24,8 @@ class StatusController
             $statusList = $this->statusModel->listByChamadoId($chamadoId);
 
             if ($statusList) {
-                // Envia os dados para a tela de detalhes do chamado
-                require __DIR__ . "/../../tema/admin/detalhesChamados.php";
+                $dadosChamado = $statusList; // Dados carregados
+                require __DIR__ . "/../../tema/admin/detalhesChamados.php"; // Passa os dados para a view
             } else {
                 header("Location: detalhesChamados.php?error=Nenhum histórico encontrado para este chamado.");
                 exit;
@@ -35,6 +35,7 @@ class StatusController
             exit;
         }
     }
+
 
     /**
      * Insere um novo status para um chamado.
@@ -63,7 +64,8 @@ class StatusController
             ]);
 
             if ($result) {
-                header("Location: detalhesChamados.php?message=Status atualizado com sucesso.");
+                // Após a inserção, redireciona para detalhes do chamado, passando o ID do chamado
+                header("Location: detalhesChamados.php?id=" . $chamadoId . "&message=Status atualizado com sucesso.");
                 exit;
             } else {
                 header("Location: detalhesChamados.php?error=Erro ao salvar o status.");
@@ -74,6 +76,7 @@ class StatusController
             exit;
         }
     }
+
 
     /**
      * Exclui um status pelo ID.
