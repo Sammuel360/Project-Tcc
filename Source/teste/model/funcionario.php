@@ -1,13 +1,17 @@
 <?php
 use Source\Models\FuncionarioModel;
 
-require "../../core/Connect.php";
-require "../../core/Model.php";
-require "../../Models/FuncionarioModel.php";
 
 
-$teste = new FuncionarioModel();
+$teste = new UsuarioModel();
+$teste->nome = "Test";
+$teste->email = "Test";
+$teste->endereco = "Test";
+$teste->telefone = "Test";
+$teste->senha = "Test";
+$teste->cep = "Test";
+$teste->estado = "Test";
+$teste->cidade = "Test";
 
-$teste->idfuncionario = 1;
-$teste->destroy();
+$teste->save();
  

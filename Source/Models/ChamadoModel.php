@@ -16,8 +16,8 @@ class ChamadoModel extends Model
     {
         $this->data = (object) $data;
         // Obtenha o ID do usuário logado (exemplo usando sessão)
-        if (isset($_SESSION['usuario_id'])) {
-            $this->data->usuario_id = $_SESSION['usuario_id'];
+        if (isset($_SESSION['usuario'])) {
+            $this->data->usuario_id = $_SESSION['usuario'];
         } else {
             $this->message = "Usuário não está logado.";
             return null;

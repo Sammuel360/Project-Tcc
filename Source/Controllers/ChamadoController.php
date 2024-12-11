@@ -108,29 +108,33 @@ class ChamadoController
     }
 
     /**
-     * Valida os dados do chamado recebidos do formulário.
-     *
-     * @return array|false Dados válidos ou false em caso de erro
-     */
-    private function validarDadosChamado()
-    {
-        $dadosChamado = [
-            'titulo' => filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'descricao' => filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'cep' => filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_NUMBER_INT),
-            'endereco' => filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'usuario_id' => $_SESSION['usuario_id'] ?? null, // Pega o ID do usuário da sessão
-            'orgao_id' => filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT),
-        ];
+ * Valida os dados do chamado recebidos do formulário.
+ *
+ * @return array|false Dados válidos ou false em caso de erro
+ */
+private function validarDadosChamado()
+{
+    $usuario = $_SESSION['usuario']; // Certifique-se de que $_SESSION['usuario'] existe e contém os dados esperados.
 
-        // Verifica se há campos obrigatórios vazios
-        foreach ($dadosChamado as $campo => $valor) {
-            if (empty($valor)) {
-                $_SESSION['message'] = "O campo '$campo' é obrigatório.";
-                return false; // Retorna falso caso algum campo esteja vazio
-            }
+    $dadosChamado = [
+        'titulo' => filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+        'descricao' => filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+        'cep' => filter_input(INPUT_POST, 'cep', FILTER_SANITIZE_NUMBER_INT),
+        'endereco' => filter_input(INPUT_POST, 'endereco', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+        'usuario_id' => $usuario->id, // Pega o ID do usuário da sessão
+        'orgao_id' => filter_input(INPUT_POST, 'orgao_id', FILTER_VALIDATE_INT), // Captura o orgao_id enviado pelo formulário
+    ];
+   
+    // Depuração para verificar os valores recebidos
+  
+    // Verifica se há campos obrigatórios vazios
+    foreach ($dadosChamado as $campo => $valor) {
+        if (empty($valor)) {
+            $_SESSION['message'] = "O campo '$campo' é obrigatório.";
+            return false; // Retorna falso caso algum campo esteja vazio
         }
-
-        return $dadosChamado;
     }
+
+    return $dadosChamado;
+}
 }

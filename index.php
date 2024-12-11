@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/vendor/autoload.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -13,7 +14,7 @@ use Source\Models\ChamadoModel; // Adicione essa linha
 use Source\Models\OrgaoModel; // Adicione essa linha
 
 session_start();
-require_once __DIR__ . '/vendor/autoload.php';
+
 
 // Ajuste do filtro para sanitizar as entradas
 $c = filter_input(INPUT_GET, 'c', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'usuario'; // controller
@@ -28,15 +29,15 @@ switch ($c) {
                 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'], $_POST['password'])) {
                     $controller->autenticar($_POST['email'], $_POST['password']);
                 } else {
-                    include __DIR__ . '/' . $controller->logar();
+                    include $controller->logar();
                 }
                 break;
             case 'main':
-                include __DIR__ . '/' . $controller->main();
+                include $controller->main();
 
                 break;
             case 'cadastrar':
-                include __DIR__ . '/' . $controller->cadastrar();
+                include  $controller->cadastrar();
 
                 break;
             case 'inserir':

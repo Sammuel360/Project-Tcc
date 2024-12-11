@@ -3,7 +3,7 @@
         'name' => 'samuel/cidadaofisca',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '16fbd9b41b1dc118f99646be67cc41d8a0c20cf1',
+        'reference' => 'f8e91518d574664751acc320d948932a58a9a108',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -103,7 +103,7 @@
         'samuel/cidadaofisca' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '16fbd9b41b1dc118f99646be67cc41d8a0c20cf1',
+            'reference' => 'f8e91518d574664751acc320d948932a58a9a108',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
