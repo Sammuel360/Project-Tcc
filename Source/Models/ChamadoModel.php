@@ -15,38 +15,46 @@ class ChamadoModel extends Model
     public function inserirChamado(array $data): ?ChamadoModel
     {
         $this->data = (object) $data;
-        // Obtenha o ID do usuário logado (exemplo usando sessão)
-        if (isset($_SESSION['usuario'])) {
-            $this->data->usuario_id = $_SESSION['usuario'];
+
+        // Verifica se o usuário está logado na sessão
+        if (isset($_SESSION['usuario']) && method_exists($_SESSION['usuario'], 'getId')) {
+            // Aqui, obtemos apenas o ID do usuário logado
+            $this->data->usuario_id = $_SESSION['usuario']->getId();
         } else {
-            $this->message = "Usuário não está logado.";
+            $this->message = "Usuário não está logado ou método getId() não existe.";
             return null;
         }
+
         // Verifica se os campos obrigatórios estão preenchidos
         if (!$this->required()) {
             return null;
         }
 
         // Prepara a query de inserção
-        $query = "INSERT INTO " . self::$entity . " (titulo, descricao, cep, endereco, usuario_id, orgao_id, data_abertura) VALUES (:titulo, :descricao, :cep, :endereco, :usuario_id, :orgao_id, :data_abertura)";
-        $params = http_build_query([
+        $query = "INSERT INTO " . self::$entity . " (titulo, descricao, cep, endereco, usuario_id, orgao_id) 
+              VALUES (:titulo, :descricao, :cep, :endereco, :usuario_id, :orgao_id)";
+
+        // Parametriza os valores para a query
+        $params = [
             'titulo' => $this->data->titulo,
             'descricao' => $this->data->descricao,
             'cep' => $this->data->cep,
             'endereco' => $this->data->endereco,
-            'usuario_id' => $this->data->usuario_id,
+            'usuario_id' => $this->data->usuario_id,  // Passando apenas o ID do usuário
             'orgao_id' => $this->data->orgao_id,
-            'data_abertura' => date('Y-m-d H:i:s')
-        ]);
 
-        // Executa a query de inserção
+        ];
+
+        // Executa a query de inserção no banco
         if ($this->create($query, $params)) {
             return $this;
         } else {
-            $this->message = "Erro ao inserir chamado.";
+            var_dump($this->message);  // Exibe a mensagem de erro detalhada
             return null;
         }
     }
+
+
 
     /**
      * Método para buscar um chamado por ID

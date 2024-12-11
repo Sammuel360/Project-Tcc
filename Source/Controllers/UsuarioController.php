@@ -16,7 +16,6 @@ class UsuarioController
     private function redirectWithMessage($location, $message, $type)
     {
         header("location: $location?message=$message&typeMessage=$type");
-        exit;
     }
 
     public function logar()
@@ -47,13 +46,13 @@ class UsuarioController
         }
 
         // Depuração: Exibindo o e-mail antes da consulta
-        var_dump($email); // Verifica se o e-mail está correto
+
 
         // Buscando o usuário pelo email
         $usuario = $this->usuario->findByEmail($email);
 
         // Depuração: Exibindo os dados do usuário ou NULL
-        var_dump($usuario); // Verifica se o usuário foi encontrado no banco de dados
+
 
         // Verificando se o usuário foi encontrado e se a senha está correta
         if (!$usuario) {
@@ -67,7 +66,6 @@ class UsuarioController
         // Se o usuário for encontrado e a senha for válida
         $_SESSION['usuario'] = $usuario;
         header('location: index.php?c=usuario&a=main');
-        exit;
     }
 
 
@@ -113,7 +111,7 @@ class UsuarioController
     public function main()
     {
         if (isset($_SESSION['usuario'])) {
-            var_dump($_SESSION['usuario']);
+
             include "tema/admin/pages/main.php";
         } else {
             header('location: index.php?c=usuario&a=logar');

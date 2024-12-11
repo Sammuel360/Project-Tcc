@@ -110,41 +110,27 @@ abstract class Model
      * 
      * @return int|null O ultimo id inserido, ou null caso  tenha uma falha criação do registro.
      */
-    protected function create(string $query, string $paramss): ?int
+    protected function create(string $query, array $params): ?int
     {
         try {
             // Prepara a query
             $stmt = Connect::getConn()->prepare($query);
-            if ($paramss) {
-                // Converte a string de parâmetros em um array associativo
-                parse_str($paramss, $params);
 
-                // Loop através do array de parâmetros
-                foreach ($params as $key => $value) {
-                    // Verifica se o campo 'data_cadastro' está vazio e preenche com a data atual
-                    if ($key == 'data_cadastro' && empty($value)) {
-                        $type = \PDO::PARAM_STR;
-                    }
-                    // Define o tipo do parâmetro como inteiro ou string
-                    if (is_numeric($value)) {
-                        $type = \PDO::PARAM_INT;
-                    } else {
-                        $type = \PDO::PARAM_STR;
-                    }
-                    // Faz o bind do parâmetro com o valor e o tipo
-                    $stmt->bindValue("{$key}", $value, $type);
-                }
+            foreach ($params as $key => $value) {
+                $type = is_numeric($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
+                $stmt->bindValue(":{$key}", $value, $type);
             }
-            // Executa a query e retorna o ultimo id inserido
+
+            // Executa a query e retorna o último id inserido
             $stmt->execute();
             return Connect::getConn()->lastInsertId();
-        }
-        // Em caso de erro na execução, armazena-se a falha e retorna null. 
-        catch (PDOException $e) {
-            $this->fail = $e;
+        } catch (PDOException $e) {
+            $this->fail = $e; // Armazena o erro na propriedade fail
+            $this->message = "Erro ao executar a query: " . $e->getMessage(); // Armazena mensagem detalhada
             return null;
         }
     }
+
     /**
      * Atualiza um registro no banco de dados.
      * 

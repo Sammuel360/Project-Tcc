@@ -145,6 +145,14 @@ class UsuarioModel extends Model
         }
         return $this;
     }
+
+    // Supondo que você tenha uma propriedade 'id' no objeto do usuário
+    public function getId()
+    {
+        return $_SESSION['usuario']->id ?? null;
+    }
+
+
     /**
      * Deleta um registro no banco de dados.
      *
