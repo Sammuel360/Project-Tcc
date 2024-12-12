@@ -37,109 +37,47 @@ class UsuarioModel extends Model
      * 
      * @return UsuarioModel|null Um objeto UsuarioModel, ou null caso tenha uma falha na criação ou atualização do registro.
      */
+    /** * Insere ou atualiza um registro no banco de dados. * * @return UsuarioModel|null Um objeto UsuarioModel, ou null caso tenha uma falha na criação ou atualização do registro. */
     public function save(): ?UsuarioModel
-    {
-        // Verifica se os campos obrigatórios estão preenchidos
+    { // Verifica se os campos obrigatórios estão preenchidos 
         if (!$this->required()) {
             return null;
         }
-
-        // Atualiza se o registro já existe no banco de dados (identificado pelo id)
-        if (!empty($this->data->id)) {
-
-            // Verifica se o Email está sendo usado por outro usuário
+        // Atualiza se o registro já existe no banco de dados(identificado pelo id)
+        if (!empty($this->data->id)) { // Verifica se o Email está sendo usado por outro usuário
             if (!$this->VerifyByEmail($this->data->email, $this->data->id)) {
                 return null;
             }
 
             // Prepara a query de atualização do registro
-            $query = "UPDATE " . self::$entity . " SET "
-                . "nome=:nome,"
-                . "email=:email,"
-                . "senha=:senha,"
-                . "telefone=:telefone,"
-                . "endereco=:endereco,"
-                . "cidade=:cidade,"
-                . "estado=:estado,"
-                . "cep=:cep,"
-                . "data_cadastro=:data_cadastro"
-                . " WHERE "
-                . self::$id . "=:" . self::$id;
-
-            // Define os parâmetros da query
-            $params = ":nome={$this->data->nome}&:"
-                . "email={$this->data->email}&:"
-                . "senha={$this->data->senha}&:"
-                . "telefone={$this->data->telefone}&:"
-                . "endereco={$this->data->endereco}&:"
-                . "cidade={$this->data->cidade}&:"
-                . "estado={$this->data->estado}&:"
-                . "cep={$this->data->cep}&:"
-                . "data_cadastro=" . date('Y-m-d H:i:s') . "&:"
-                . self::$id . "={$this->data->id}";
-
-            // Executa a query de atualização do registro e armazena a mensagem . Retorna null caso tenha uma falha na criação ou atualização do registro.
-            if ($this->update($query, $params)) {
+            $query = "UPDATE " . self::$entity . " SET " . "nome=:nome, " . "email=:email, " . "senha=:senha, " . "telefone=:telefone, " . "endereco=:endereco, " . "cidade=:cidade, " . "estado=:estado, " . "cep=:cep, " . "data_cadastro=:data_cadastro" . " WHERE id=:id";
+            // Define os parâmetros da query 
+            $params = ['nome' => $this->data->nome, 'email' => $this->data->email, 'senha' => $this->data->senha, 'telefone' => $this->data->telefone, 'endereco' => $this->data->endereco, 'cidade' => $this->data->cidade, 'estado' => $this->data->estado, 'cep' => $this->data->cep, 'data_cadastro' => date('Y-m-d H:i:s'), 'id' => $this->data->id];
+            // Executa a query de atualização do registro e armazena a mensagem. Retorna null caso tenha uma falha na criação ou atualização do registro.
+            if ($this->update($query, http_build_query($params))) {
                 $this->message = "Atualizado com sucesso";
-                $this->typeMessage = "sucess";
+                $this->typeMessage = "sucesso";
             } else {
                 $this->message = "Ooops algo deu errado!";
-                $this->typeMessage = "error";
+                $this->typeMessage = "erro";
                 return null;
             }
-        }
-        // Insere se o registro ainda não existe no banco de dados
-        if (empty($this->data->id)) {
-
-            // Verifica se o Email está sendo usado por outro usuário
+        } else { // Verifica se o Email está sendo usado por outro usuário 
             if (!$this->VerifyByEmail($this->data->email)) {
                 return null;
             }
-
-            // Prepara a query de atualização do registro
-            $query = "INSERT INTO " . self::$entity . " ("
-                . "nome,"
-                . "email,"
-                . "senha,"
-                . "telefone,"
-                . "endereco,"
-                . "cidade,"
-                . "estado,"
-                . "cep,"
-                . "data_cadastro"
-                . ") VALUES (:"
-                . "nome ,:"
-                . "email ,:"
-                . "senha ,:"
-                . "telefone ,:"
-                . "endereco ,:"
-                . "cidade ,:"
-                . "estado ,:"
-                . "cep ,:"
-                . "data_cadastro"
-                . ")";
-
+            // Prepara a query de inserção do registro
+            $query = "INSERT INTO " . self::$entity . " (" . "nome, email, senha, telefone, endereco, cidade, estado, cep, data_cadastro" . ") VALUES (" . ":nome, :email, :senha, :telefone, :endereco, :cidade, :estado, :cep, :data_cadastro" . ")";
             // Define os parâmetros da query
-            $params = ":nome={$this->data->nome}&:"
-                . "email={$this->data->email}&:"
-                . "senha={$this->data->senha}&:"
-                . "telefone={$this->data->telefone}&:"
-                . "endereco={$this->data->endereco}&:"
-                . "cidade={$this->data->cidade}&:"
-                . "estado={$this->data->estado}&:"
-                . "cep={$this->data->cep}&:"
-                . "data_cadastro=" . date('Y-m-d H:i:s');
-
-
-            // Executa a query de inserção do registro e armazena o ultimo id inserido 
-            //Se a inserção foi realizada com sucesso, o id é salvo na classe genérica e é armazenada a mensagem,
-            //caso falhe armazenna a mensagem e retorna null.
-            if ($this->create($query, $params)) {
+            $params = ['nome' => $this->data->nome, 'email' => $this->data->email, 'senha' => $this->data->senha, 'telefone' => $this->data->telefone, 'endereco' => $this->data->endereco, 'cidade' => $this->data->cidade, 'estado' => $this->data->estado, 'cep' => $this->data->cep, 'data_cadastro' => date('Y-m-d H:i:s')];
+            // Executa a query de inserção do registro e armazena o último id inserido. // Se a inserção foi realizada com sucesso, o id é salvo na classe genérica e a mensagem é armazenada. // Caso falhe, armazena a mensagem e retorna null.
+            if ($id = $this->create($query, $params)) {
+                $this->data->id = $id;
                 $this->message = "Dados inseridos com sucesso!";
-                $this->typeMessage = "sucess";
+                $this->typeMessage = "sucesso";
             } else {
                 $this->message = "Ooops algo deu errado!";
-                $this->typeMessage = "error";
+                $this->typeMessage = "erro";
                 return null;
             }
         }

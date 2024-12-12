@@ -8,7 +8,7 @@
             <a href="http://localhost/cidadaofisca/index.php?c=usuario&a=main">🏠 Início</a>
             <a href="http://localhost/cidadaofisca/index.php?c=chamado&a=detalhesChamado">📊 Status</a>
             <a href="http://localhost/cidadaofisca/index.php?c=notificacoes&a=index">🔔 Notificações</a>
-            <a href="http://localhost/cidadaofisca/index.php?c=chamado&a=abrirFormulario">📝 Chamados</a>
+            <a href="http://localhost/fiscalapp/index.php?c=chamado&a=abrirFormulario">📝 Chamados</a>
             <a href="http://localhost/cidadaofisca/index.php?c=configuracao&a=index">⚙️ Configurações</a>
             <a href="http://localhost/cidadaofisca/index.php?c=ajuda&a=index">❓ Ajuda</a>
             <a href="http://localhost/cidadaofisca/index.php?c=usuario&a=perfil">👤 Perfil</a>
