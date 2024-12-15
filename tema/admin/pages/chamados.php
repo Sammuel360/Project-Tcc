@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Abrir Chamado</title>
-    <link rel="stylesheet" href="styles.css">
+
+
+
     <style>
     /* Estilo do formulário */
     body {
@@ -39,102 +41,11 @@
         border: 1px solid #ddd;
         border-radius: 4px;
     }
-
-    .button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-    .button:hover {
-        background-color: #0056b3;
-    }
-
-    /* Estilo do menu lateral */
-    #sidebar {
-        height: 100%;
-        width: 260px;
-        position: fixed;
-        top: 0;
-        left: -260px;
-        background-color: #1e293b;
-        color: white;
-        z-index: 1000;
-        padding-top: 20px;
-        transition: all 0.3s;
-    }
-
-    #sidebar.active {
-        left: 0;
-    }
-
-    #sidebar .sidebar-header {
-        padding: 20px;
-        background-color: #2563eb;
-        font-size: 1.3rem;
-    }
-
-    #sidebar ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    #sidebar ul li a {
-        color: white;
-        padding: 15px 20px;
-        display: block;
-        text-decoration: none;
-        font-size: 1.1rem;
-    }
-
-    #sidebar ul li a:hover {
-        background-color: #2563eb;
-        border-radius: 5px;
-    }
-
-    /* Estilo do botão de alternância */
-    #sidebarCollapse {
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        z-index: 1050;
-        background-color: #17a2b8;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        font-size: 20px;
-        cursor: pointer;
-    }
-
-    #content.shifted {
-        margin-left: 270px;
-    }
     </style>
 </head>
 
 <body>
-    <!-- Botão de alternância do menu lateral -->
-    <button id="sidebarCollapse" class="btn btn-info">☰</button>
-
-    <!-- Menu Lateral -->
-    <nav id="sidebar">
-        <div class="sidebar-header">
-            <h3>Fiscal Cidadão</h3>
-        </div>
-        <ul class="list-unstyled components">
-            <li><a href="http://localhost/fiscalapp/index.php?c=usuario&a=main">🏠 Início</a></li>
-            <li><a href="DetalhesChamado.php">📊 Status</a></li>
-            <li><a href="#">🔔 Notificações</a></li>
-            <li><a href="perfil.php">👤 Perfil</a></li>
-            <li><a href="configuracoes.php">⚙️ Configurações</a></li>
-            <li><a href="ajuda.php">❓ Ajuda</a></li>
-            <li><a href="index.php?c=chamado&a=abrirFormulario">📝 Chamados</a></li>
-            <!-- index.php?c=chamado&a=abrirFormulario_-->
-        </ul>
-    </nav>
+    <?php include_once __DIR__ . '/../includes/menulateral.php'; ?>
 
     <div class="container">
         <h1>Abrir Chamado</h1>
@@ -184,15 +95,8 @@
 
 
     </div>
-    <script>
-    // Alterna a classe active para mostrar/ocultar o menu lateral
-    document.getElementById("sidebarCollapse").onclick = function() {
-        var sidebar = document.getElementById("sidebar");
-        var content = document.getElementById("content");
-        sidebar.classList.toggle("active");
-        content.classList.toggle("shifted");
-    };
-    </script>
+
+
 
 </body>
 

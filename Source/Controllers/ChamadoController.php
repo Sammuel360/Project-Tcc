@@ -118,17 +118,44 @@ class ChamadoController
     }
 
     /**
-     * Exibe os detalhes de um chamado específico.
+     * Lista todos os chamados abertos, junto com seus status.
      *
-     * @param int $id ID do chamado a ser exibido
      * @return void
      */
-    /**
-     * Exibe os detalhes de um chamado, incluindo o histórico de status.
-     *
-     * @param int $id O ID do chamado a ser exibido.
-     * @return void
-     */
+    public function listarStatus(): void
+    {
+        try {
+            // Pega o ID do usuário logado
+            $usuarioId = $_SESSION['usuario_id'];
+
+            // Busca todos os chamados abertos do usuário logado
+            $chamados = $this->chamadoModel->listarPorUsuario($usuarioId);
+
+            if (!$chamados) {
+                $_SESSION['mensagem_erro'] = "Nenhum chamado encontrado.";
+                header('Location: index.php?c=chamado&a=abrirFormulario');
+                exit;
+            }
+
+            // Para cada chamado, busca o histórico de status
+            foreach ($chamados as $chamado) {
+                $historicoStatus = $this->statusController->detalhes($chamado->id);
+                $chamado->historicoStatus = $historicoStatus; // Adiciona o histórico de status ao chamado
+            }
+
+            // Renderiza a view com a lista de chamados e seus status
+            require_once __DIR__ . '/../../tema/admin/pages/listaStatus.php';
+        } catch (\Exception $e) {
+            // Log do erro e mensagem para o usuário
+            error_log("Erro ao listar os chamados e status: " . $e->getMessage());
+            $_SESSION['mensagem_erro'] = "Erro inesperado ao listar os chamados.";
+            header('Location: index.php?c=chamado&a=abrirFormulario');
+            exit;
+        }
+    }
+
+
+
     /**
      * Exibe os detalhes de um chamado, incluindo o histórico de status.
      *

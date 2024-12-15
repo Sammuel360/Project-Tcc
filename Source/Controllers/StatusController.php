@@ -48,6 +48,11 @@ class StatusController
         }
     }
 
+
+
+
+
+
     /**
      * Atualiza o status de um chamado no histórico.
      *

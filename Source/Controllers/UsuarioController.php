@@ -111,10 +111,10 @@ class UsuarioController
     public function main()
     {
         if (isset($_SESSION['usuario'])) {
-
-            include "tema/admin/pages/main.php";
+            return "tema/admin/pages/main.php"; // Retorna o caminho do arquivo
         } else {
             header('location: index.php?c=usuario&a=logar');
+            exit; // Certifique-se de chamar exit após o redirecionamento
         }
     }
 }

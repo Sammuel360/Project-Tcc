@@ -33,7 +33,11 @@ switch ($c) {
                 }
                 break;
             case 'main':
-                include $controller->main();
+                $path = $controller->main(); // Chama o método e pega o caminho retornado
+                if ($path) {
+                    include $path; // Inclui o arquivo retornado
+                }
+
                 break;
             case 'cadastrar':
                 include  $controller->cadastrar();

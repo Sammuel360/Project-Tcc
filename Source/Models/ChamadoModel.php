@@ -89,26 +89,77 @@ class ChamadoModel extends Model
      */
     public function findById(int $id)
     {
-        $query = "SELECT c.*, o.nome AS nome_orgao, u.nome AS nome_usuario 
+        $queryChamado = "SELECT c.*, o.nome AS nome_orgao, u.nome AS nome_usuario 
+                         FROM chamados c
+                         JOIN orgaos o ON c.orgao_id = o.id
+                         JOIN usuarios u ON c.usuario_id = u.id
+                         WHERE c.id = :id";
+
+        $queryHistorico = "SELECT hs.status, hs.data_alteracao, hs.observacao
+                           FROM historico_status hs
+                           WHERE hs.chamado_id = :id
+                           ORDER BY hs.data_alteracao ASC";
+
+        try {
+            // Prepara a consulta principal para o chamado
+            $stmtChamado = $this->db->prepare($queryChamado);
+            $stmtChamado->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmtChamado->execute();
+
+            // Obtém os dados do chamado
+            $chamado = $stmtChamado->fetch(\PDO::FETCH_OBJ);
+
+            if (!$chamado) {
+                return null; // Retorna null se o chamado não for encontrado
+            }
+
+            // Prepara a consulta para o histórico de status
+            $stmtHistorico = $this->db->prepare($queryHistorico);
+            $stmtHistorico->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmtHistorico->execute();
+
+            // Obtém o histórico de status como um array de objetos
+            $historicoStatus = $stmtHistorico->fetchAll(\PDO::FETCH_OBJ);
+
+            // Adiciona o histórico de status ao objeto do chamado
+            $chamado->historicoStatus = $historicoStatus;
+
+            return $chamado; // Retorna o chamado com o histórico de status
+        } catch (\PDOException $e) {
+            // Captura a exceção e exibe uma mensagem de erro
+            error_log("Erro ao buscar chamado e histórico de status: " . $e->getMessage());
+            return null; // Retorna null em caso de erro
+        }
+    }
+    /**
+     * Lista todos os chamados abertos de um usuário.
+     *
+     * @param int $usuarioId
+     * @return array
+     */
+    public function listarPorUsuario(int $usuarioId): array
+    {
+        $query = "SELECT c.id, c.titulo, c.descricao, c.status, o.nome AS nome_orgao, u.nome AS nome_usuario
                   FROM chamados c
                   JOIN orgaos o ON c.orgao_id = o.id
                   JOIN usuarios u ON c.usuario_id = u.id
-                  WHERE c.id = :id";
+                  WHERE c.usuario_id = :usuario_id AND c.status = 'pendente'"; // Apenas chamados pendentes
 
         try {
             // Prepara a consulta
             $stmt = $this->db->prepare($query);
-            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            $stmt->bindValue(':usuario_id', $usuarioId, \PDO::PARAM_INT);
             $stmt->execute();
 
-            // Retorna o resultado ou null se não encontrar
-            return $stmt->fetch(\PDO::FETCH_OBJ) ?: null;
+            // Retorna os resultados como um array de objetos
+            return $stmt->fetchAll(\PDO::FETCH_OBJ);
         } catch (\PDOException $e) {
-            // Captura a exceção e exibe uma mensagem de erro
-            error_log("Erro ao buscar chamado: " . $e->getMessage());
-            return null; // Retorna null em caso de erro
+            // Captura o erro e loga
+            error_log("Erro ao listar chamados: " . $e->getMessage());
+            return [];
         }
     }
+
 
 
 

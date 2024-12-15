@@ -7,77 +7,71 @@
     <title>Detalhes do Chamado</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="includes/menulateral.css"> <!-- CSS separado -->
+    <link rel="stylesheet" href="/../css/menulateral.css"> <!-- CSS externo -->
 </head>
 
 <body>
     <?php include_once __DIR__ . '/../includes/menulateral.php'; ?>
 
-    <div class="detalhes-chamado container mt-5">
+    <div class="container mt-5">
         <?php if (isset($chamado)): ?>
+        <!-- Cabeçalho -->
         <header class="mb-4">
             <h1>Detalhes do Chamado #<?php echo htmlspecialchars($chamado->id); ?></h1>
         </header>
 
-        <section class="cards-section row">
-            <div class="card col-md-4 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Título</h5>
-                    <p class="card-text"><?php echo htmlspecialchars($chamado->titulo); ?></p>
+        <!-- Informações principais do chamado -->
+        <section class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Título</h5>
+                        <p class="card-text"><?php echo htmlspecialchars($chamado->titulo); ?></p>
+                    </div>
                 </div>
             </div>
-            <div class="card col-md-8 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Descrição</h5>
-                    <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado->descricao)); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-8 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Cep</h5>
-                    <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado->cep)); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-8 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Endereço</h5>
-                    <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado->endereco)); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-4 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Status Atual</h5>
-                    <p class="card-text"><?php echo ucfirst(htmlspecialchars($chamado->status)); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-4 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Órgão Responsável</h5>
-                    <p class="card-text"><?php echo htmlspecialchars($chamado->nome_orgao); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-4 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Usuário</h5>
-                    <p class="card-text"><?php echo htmlspecialchars($chamado->nome_usuario); ?></p>
-                </div>
-            </div>
-            <div class="card col-md-4 mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Data de Criação</h5>
-                    <p class="card-text"><?php echo date('d/m/Y H:i:s', strtotime($chamado->created_at)); ?></p>
+
+            <div class="col-md-8 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Descrição</h5>
+                        <p class="card-text"><?php echo nl2br(htmlspecialchars($chamado->descricao)); ?></p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="graficos-section mb-4">
-            <div class="grafico-container">
-                <h3>Distribuição do Chamado</h3>
-                <canvas id="statusChart"></canvas>
+        <section class="row">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Status Atual</h5>
+                        <p class="card-text"><?php echo ucfirst(htmlspecialchars($chamado->status)); ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Órgão Responsável</h5>
+                        <p class="card-text"><?php echo htmlspecialchars($chamado->nome_orgao); ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Usuário</h5>
+                        <p class="card-text"><?php echo htmlspecialchars($chamado->nome_usuario); ?></p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section class="historico-status-section mb-4">
+        <!-- Histórico de Status -->
+        <section class="mt-4">
             <h3>Histórico de Status</h3>
             <?php if (!empty($historicoStatus)): ?>
             <table class="table table-bordered">
@@ -91,7 +85,7 @@
                 <tbody>
                     <?php foreach ($historicoStatus as $status): ?>
                     <tr>
-                        <td><?php echo htmlspecialchars(ucfirst($status->status)); ?></td>
+                        <td><?php echo ucfirst(htmlspecialchars($status->status)); ?></td>
                         <td><?php echo date('d/m/Y H:i:s', strtotime($status->data_alteracao)); ?></td>
                         <td><?php echo nl2br(htmlspecialchars($status->observacao)); ?></td>
                     </tr>
@@ -103,7 +97,8 @@
             <?php endif; ?>
         </section>
 
-        <section class="atualizar-status-section">
+        <!-- Atualizar Status -->
+        <section class="mt-4">
             <h3>Atualizar Status</h3>
             <form action="index.php?c=status&a=inserir" method="POST">
                 <input type="hidden" name="chamado_id" value="<?php echo htmlspecialchars($chamado->id); ?>">
@@ -131,6 +126,7 @@
         <?php endif; ?>
     </div>
 
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
     const ctx = document.getElementById('statusChart').getContext('2d');
@@ -147,10 +143,14 @@
             }]
         }
     });
-    </script>
 
+    document.getElementById("sidebarCollapse").onclick = function() {
+        document.getElementById("sidebar").classList.toggle("active");
+        document.getElementById("content").classList.toggle("shifted");
+    };
+    </script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="includes/script.js"></script> <!-- JS separado -->
+    <script src="includes/script.js"></script>
 </body>
 
 </html>
