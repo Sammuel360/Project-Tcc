@@ -10,11 +10,11 @@ use Source\Controllers\ChamadoController;
 use Source\Controllers\StatusController;
 use Source\Controllers\NotificacaoController;
 use Source\Controllers\OrgaoController;
-use Source\Models\ChamadoModel; // Adicione essa linha
-use Source\Models\OrgaoModel; // Adicione essa linha
+use Source\Models\ChamadoModel;
+use Source\Models\OrgaoModel;
+use Source\Models\StatusModel;
 
 session_start();
-
 
 // Ajuste do filtro para sanitizar as entradas
 $c = filter_input(INPUT_GET, 'c', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?: 'usuario'; // controller
@@ -34,11 +34,9 @@ switch ($c) {
                 break;
             case 'main':
                 include $controller->main();
-
                 break;
             case 'cadastrar':
                 include  $controller->cadastrar();
-
                 break;
             case 'inserir':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,9 +61,19 @@ switch ($c) {
         break;
 
     case 'chamado':
-        $chamadoModel = new ChamadoModel(); // Crie a instância do ChamadoModel
-        $orgaoModel = new OrgaoModel(); // Crie a instância do OrgaoModel
-        $controller = new ChamadoController($chamadoModel, $orgaoModel); // Passe as instâncias ao ChamadoController
+        // Crie as instâncias dos modelos
+        $statusModel = new StatusModel();
+        $chamadoModel = new ChamadoModel();
+        $orgaoModel = new OrgaoModel();
+
+        // Crie a instância do StatusController passando o modelo de status
+        $statusController = new StatusController($statusModel);
+
+        // Crie a instância do ChamadoController passando todos os modelos e o StatusController
+        $controller = new ChamadoController($chamadoModel, $orgaoModel, $statusModel, $statusController);
+
+
+
         switch ($a) {
             case 'abrirFormulario':
                 $controller->abrirFormulario();
@@ -74,8 +82,15 @@ switch ($c) {
                 $controller->inserir();
                 break;
             case 'detalhes':
-                $controller->detalhes();
+                $chamadoId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+                if ($chamadoId) {
+                    $controller->detalhes();
+                } else {
+                    header("Location: index.php?c=chamado&a=abrirFormulario");
+                    exit;
+                }
                 break;
+
             default:
                 header("Location: index.php?c=chamado&a=abrirFormulario");
                 break;
@@ -83,7 +98,12 @@ switch ($c) {
         break;
 
     case 'status':
-        $controller = new StatusController();
+        // Crie as instâncias dos modelos necessários
+        $statusModel = new StatusModel();
+        $chamadoModel = new ChamadoModel();
+        $orgaoModel = new OrgaoModel();
+
+
         switch ($a) {
             case 'inserir':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -92,23 +112,45 @@ switch ($c) {
                         'status' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
                         'observacao' => FILTER_SANITIZE_FULL_SPECIAL_CHARS,
                     ]);
-                    $controller->inserir($sanitizedData);
+
+                    $validStatuses = ['pendente', 'em_progresso', 'concluido'];
+                    if (!in_array($sanitizedData['status'], $validStatuses)) {
+                        header("Location: index.php?c=status&a=listar&error=Status inválido.");
+                        exit;
+                    }
+
+                    // Inserir o novo status no banco
+                    header("Location: detalhesChamados.php?id=" . $sanitizedData['chamado_id']);
+                    exit;
                 }
                 break;
+
             case 'listar':
                 $chamadoId = filter_input(INPUT_GET, 'chamado_id', FILTER_SANITIZE_NUMBER_INT);
                 if ($chamadoId) {
-                    $controller->listarPorChamado((int) $chamadoId);
+                    $statusController->listarPorChamado((int) $chamadoId);
                 } else {
                     header("Location: detalhesChamados.php?error=ID do chamado inválido.");
                     exit;
                 }
                 break;
+
+            case 'detalhes':
+                $chamadoId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+                if ($chamadoId) {
+                    $statusController->detalhes((int) $chamadoId);
+                } else {
+                    header("Location: index.php?c=status&a=listar&error=ID do chamado é inválido.");
+                    exit;
+                }
+                break;
+
             default:
                 header("Location: index.php?c=status&a=listar");
                 break;
         }
         break;
+
 
     case 'notificacao':
         $controller = new NotificacaoController();
@@ -136,28 +178,20 @@ switch ($c) {
         $controller = new OrgaoController();
         switch ($a) {
             case 'listar':
-                // Obtém os órgãos com o método correto
-                $orgaos = $controller->list();  // Agora usando o método 'listar' (similar ao 'listarTodos')
-
+                $orgaos = $controller->list();
                 if ($orgaos) {
-                    // Passa os dados para a página
-                    $_SESSION['orgaos'] = $orgaos;  // Armazena os órgãos na sessão
-                    include_once __DIR__ . '/tema/admin/pages/chamados.php';  // Inclui a página de chamados
+                    $_SESSION['orgaos'] = $orgaos;
+                    include_once __DIR__ . '/tema/admin/pages/chamados.php';
                 } else {
-                    // Se não houver órgãos, redireciona com mensagem de erro
                     $_SESSION['message'] = 'Nenhum órgão encontrado!';
                     header("Location: index.php");
                 }
                 break;
-
             default:
-                // Ação padrão para listar órgãos
                 header("Location: index.php?c=orgao&a=listar");
                 break;
         }
         break;
-
-
 
     case 'configuracoes':
         include_once __DIR__ . '/tema/admin/pages/configuracoes.php';

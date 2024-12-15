@@ -8,96 +8,129 @@ class StatusController
 {
     private $statusModel;
 
-    public function __construct()
+    public function __construct(StatusModel $statusModel)
     {
-        $this->statusModel = new StatusModel();
+        $this->statusModel = $statusModel;
     }
 
     /**
      * Lista o histórico de status de um chamado específico.
      * 
      * @param int $chamadoId
+     * @return void
      */
-    public function listarPorChamado(int $chamadoId)
+    public function listarPorChamado(int $chamadoId): void
     {
         try {
+            // Validação do ID do chamado
+            if (!$chamadoId || $chamadoId <= 0) {
+                throw new \InvalidArgumentException("ID do chamado inválido.");
+            }
+
+            // Recupera o histórico de status do chamado
             $statusList = $this->statusModel->listByChamadoId($chamadoId);
 
+            // Armazena o resultado na sessão ou define uma mensagem de aviso
             if ($statusList) {
-                $dadosChamado = $statusList; // Dados carregados
-                require __DIR__ . "/../../tema/admin/detalhesChamados.php"; // Passa os dados para a view
+                $_SESSION['statusList'] = $statusList;
             } else {
-                header("Location: detalhesChamados.php?error=Nenhum histórico encontrado para este chamado.");
-                exit;
+                $_SESSION['warning'] = 'Nenhum histórico encontrado para este chamado.';
             }
+
+            // Redireciona para a tela de detalhes do chamado
+            header("Location: index.php?c=chamado&a=detalhes&id=" . $chamadoId);
+            exit;
         } catch (\Exception $e) {
-            header("Location: detalhesChamados.php?error=Erro ao buscar histórico de status.");
+            $_SESSION['error'] = 'Erro ao buscar histórico de status. Tente novamente.';
+            error_log($e->getMessage());
+            header("Location: index.php?c=chamado&a=detalhes&id=" . $chamadoId);
             exit;
         }
     }
 
-
     /**
-     * Insere um novo status para um chamado.
-     * 
-     * @param array $data
+     * Atualiza o status de um chamado no histórico.
+     *
+     * @param int $chamadoId
+     * @param string $novoStatus
+     * @return void
      */
-    public function inserir(array $data)
+    public function atualizarStatus(int $chamadoId, string $novoStatus): void
     {
         try {
-            // Sanitiza os dados recebidos
-            $chamadoId = filter_var($data['chamado_id'], FILTER_SANITIZE_NUMBER_INT);
-            $status = filter_var($data['status'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-            $observacao = filter_var($data['observacao'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-
-            // Verifica se os dados são válidos
-            if (empty($chamadoId) || empty($status)) {
-                header("Location: detalhesChamados.php?error=Campos obrigatórios não preenchidos.");
-                exit;
+            // Validação dos parâmetros
+            if (!$chamadoId || $chamadoId <= 0) {
+                throw new \InvalidArgumentException("ID do chamado inválido.");
             }
 
-            // Salva o novo status no banco
-            $result = $this->statusModel->save([
-                'chamado_id' => $chamadoId,
-                'status' => $status,
-                'observacao' => $observacao
-            ]);
+            if (empty($novoStatus)) {
+                throw new \InvalidArgumentException("Status não pode ser vazio.");
+            }
 
-            if ($result) {
-                // Após a inserção, redireciona para detalhes do chamado, passando o ID do chamado
-                header("Location: detalhesChamados.php?id=" . $chamadoId . "&message=Status atualizado com sucesso.");
-                exit;
+            // Atualiza o status do chamado no modelo
+            $resultado = $this->statusModel->atualizarStatus($chamadoId, $novoStatus);
+
+            // Define mensagens de feedback
+            if ($resultado) {
+                $_SESSION['message'] = 'Status atualizado com sucesso!';
             } else {
-                header("Location: detalhesChamados.php?error=Erro ao salvar o status.");
-                exit;
+                $_SESSION['error'] = 'Erro ao atualizar o status do chamado.';
             }
+
+            // Redireciona para a página de detalhes do chamado
+            header("Location: index.php?c=chamado&a=detalhes&id=" . $chamadoId);
+            exit;
         } catch (\Exception $e) {
-            header("Location: detalhesChamados.php?error=Erro ao salvar o status. Tente novamente.");
+            $_SESSION['error'] = 'Erro ao atualizar o status. Tente novamente.';
+            error_log($e->getMessage());
+            header("Location: index.php?c=chamado&a=detalhes&id=" . $chamadoId);
             exit;
         }
     }
 
-
     /**
-     * Exclui um status pelo ID.
+     * Insere o status inicial de um chamado, usado durante a criação de um novo chamado.
      * 
-     * @param int $id
+     * @param int $chamadoId
+     * @param int $usuarioId
+     * @param int|null $orgaoId
+     * @return bool
      */
-    public function deletar(int $id)
+    public function inserirStatusInicial(int $chamadoId, int $usuarioId, ?int $orgaoId = null): bool
     {
         try {
-            $result = $this->statusModel->deleteById($id);
-
-            if ($result) {
-                header("Location: detalhesChamados.php?message=Status removido com sucesso.");
-                exit;
-            } else {
-                header("Location: detalhesChamados.php?error=Erro ao remover o status.");
-                exit;
+            // Validação dos IDs
+            if ($chamadoId <= 0 || $usuarioId <= 0) {
+                throw new \InvalidArgumentException("IDs de chamado ou usuário inválidos.");
             }
+
+            // Chama o método do modelo para inserir o status inicial
+            return $this->statusModel->inserirStatusInicial($chamadoId, $usuarioId, $orgaoId);
         } catch (\Exception $e) {
-            header("Location: detalhesChamados.php?error=Erro ao excluir o status.");
-            exit;
+            error_log("Erro ao inserir status inicial: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Detalha o histórico de status de um chamado específico.
+     *
+     * @param int $chamadoId
+     * @return array|null
+     */
+    public function detalhes(int $chamadoId): ?array
+    {
+        try {
+            // Valida o ID do chamado
+            if ($chamadoId <= 0) {
+                throw new \InvalidArgumentException("ID do chamado inválido.");
+            }
+
+            // Busca o histórico de status do chamado
+            return $this->statusModel->listByChamadoId($chamadoId);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            return null;
         }
     }
 }

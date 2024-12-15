@@ -113,23 +113,26 @@ abstract class Model
     protected function create(string $query, array $params): ?int
     {
         try {
-            // Prepara a query
             $stmt = Connect::getConn()->prepare($query);
 
+            // Bind dos parâmetros
             foreach ($params as $key => $value) {
                 $type = is_numeric($value) ? \PDO::PARAM_INT : \PDO::PARAM_STR;
                 $stmt->bindValue(":{$key}", $value, $type);
             }
 
-            // Executa a query e retorna o último id inserido
             $stmt->execute();
+
+            // Retorna o ID do último registro inserido
             return Connect::getConn()->lastInsertId();
         } catch (PDOException $e) {
-            $this->fail = $e; // Armazena o erro na propriedade fail
-            $this->message = "Erro ao executar a query: " . $e->getMessage(); // Armazena mensagem detalhada
+            // Log detalhado de erro
+            error_log("Erro na criação do registro: " . $e->getMessage() . " - Query: " . $query . " - Parâmetros: " . json_encode($params));
             return null;
         }
     }
+
+
 
     /**
      * Atualiza um registro no banco de dados.
