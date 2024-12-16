@@ -6,63 +6,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Fiscal Digital Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div class="flex justify-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-16 h-16">
-                <circle cx="50" cy="50" r="45" fill="#00b8d4" />
-                <path d="M50 20 A30 30 0 0 1 80 50 L50 50 Z" fill="#ffffff" />
-                <rect x="75" y="45" width="20" height="10" fill="#00b8d4" />
-            </svg>
-        </div>
-        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Fiscal Digital</h1>
-        <form action="index.php?c=usuario&a=logar" method="post">
-            <div class="mb-4">
-                <label for="email" class="sr-only">Digite seu Email</label>
-                <input type="email" id="email" name="email" placeholder="Digite seu Email"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            </div>
+<body style="background-color: #9A616D;">
 
-            <div class="mb-4">
-                <label for="password" class="sr-only">Digite sua senha</label>
-                <input type="password" id="password" name="password" placeholder="Digite sua senha"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500">
+    <section class="vh-100">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col col-xl-10">
+                    <div class="card" style="border-radius: 1rem;">
+                        <div class="row g-0">
+                            <div class="col-md-6 col-lg-5 d-none d-md-block">
+                                <img src="https://media.istockphoto.com/photos/close-up-photo-of-a-beautiful-young-woman-using-a-mobile-phone-in-a-picture-id1288157145?k=20&m=1288157145&s=612x612&w=0&h=fv_LEt20U4t3h-ZQEBhdk6Yuxm3weCHWK2iwCsPG_ZY="
+                                    alt="login form" class="img-fluid" style="border-radius: 1rem 0 0 1rem;" />
+                            </div>
+                            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                                <div class="card-body p-4 p-lg-5 text-black">
+
+                                    <form action="index.php?c=usuario&a=logar" method="post">
+                                        <div class="d-flex align-items-center mb-3 pb-1">
+                                            <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
+                                            <span class="h1 fw-bold mb-0">Fiscal Digital</span>
+                                        </div>
+
+                                        <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;">Acesse sua conta
+                                        </h5>
+
+                                        <div class="form-outline mb-4">
+                                            <input type="email" id="email" name="email" placeholder="Digite seu Email"
+                                                class="form-control form-control-lg" required />
+                                            <label class="form-label" for="email">Email</label>
+                                        </div>
+
+                                        <div class="form-outline mb-4">
+                                            <input type="password" id="password" name="password"
+                                                placeholder="Digite sua senha" class="form-control form-control-lg"
+                                                required />
+                                            <label class="form-label" for="password">Senha</label>
+                                        </div>
+
+                                        <div class="pt-1 mb-4">
+                                            <button class="btn btn-dark btn-lg btn-block" type="submit">Login</button>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between">
+                                            <a href="#" class="small text-muted">Esqueceu a senha?</a>
+                                            <p class="mb-0"><a href="index.php?c=usuario&a=cadastrar"
+                                                    class="small text-muted">Cadastrar novo Usuário</a></p>
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="text-right mb-4">
-                <a href="#" class="text-sm text-cyan-600 hover:underline">Esqueceu a senha?</a>
-            </div>
-            <button type="submit"
-                class="w-full bg-gray-800 text-white py-2 rounded-md hover:bg-gray-700 transition duration-300">Acessar</button>
-        </form>
-        <div class="mt-4 text-center">
-            <p class="text-gray-600">Ou</p>
         </div>
-        <button
-            class="w-full mt-4 bg-white border border-gray-300 text-gray-700 py-2 rounded-md hover:bg-gray-50 transition duration-300 flex items-center justify-center">
-            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4" />
-                <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853" />
-                <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05" />
-                <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335" />
-            </svg>
-            Entrar com Google
-        </button>
-        <div class="mt-6 text-center">
-            <p class="mb-0">
-                <a href="index.php?c=usuario&a=cadastrar" class="text-center">Cadastrar novo Usuario</a>
-            </p>
-        </div>
-    </div>
+    </section>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>

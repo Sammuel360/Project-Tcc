@@ -5,14 +5,172 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual do Usuário - Cidadão Ativo</title>
+    <style>
+    /* Reset básico para garantir consistência entre navegadores */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-    <link rel="stylesheet" href="includes/menulateral.css"> <!-- CSS separado -->
-    <link rel="stylesheet" href="ajuda.css">
+    /* Definindo a fonte para o corpo do texto */
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        color: #333;
+    }
 
+    /* Definindo o estilo do cabeçalho */
+    header {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px 8px 0 0;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    header p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    /* Estilo do índice de navegação */
+    .index {
+        background-color: #fff;
+        margin: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .index h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+    }
+
+    .index ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    .index ul li {
+        margin-bottom: 8px;
+    }
+
+    .index a {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 1rem;
+    }
+
+    .index a:hover {
+        text-decoration: underline;
+    }
+
+    /* Estilo do conteúdo principal */
+    .container {
+        margin: 20px;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+        margin-top: 20px;
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 5px;
+    }
+
+    .section-text {
+        font-size: 1.1rem;
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+
+    .subsection-title {
+        font-size: 1.4rem;
+        margin-top: 15px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    ul {
+        margin-top: 10px;
+        margin-left: 20px;
+    }
+
+    ul li {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    ol {
+        margin-top: 10px;
+        margin-left: 20px;
+    }
+
+    ol li {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+
+    /* Estilo das imagens */
+    img {
+        margin-top: 20px;
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+
+    /* Estilo de links */
+    a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsividade para telas menores */
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+        }
+
+        header p {
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+        }
+
+        .section-text,
+        .subsection-title,
+        ul li,
+        ol li {
+            font-size: 1rem;
+        }
+    }
+    </style>
 </head>
 
 <body>
-    <?php include_once __DIR__ . '/includes/menulateral.php'; ?>
+    <?php include_once __DIR__ . '/../includes/menulateral.php'; ?>
     <header>
 
 
@@ -239,15 +397,7 @@
     <footer>
         <p>&copy; 2024 Cidadão Ativo. Todos os direitos reservados.</p>
     </footer>
-    <script>
-    // Alterna a classe active para mostrar/ocultar o menu lateral
-    document.getElementById("sidebarCollapse").onclick = function() {
-        var sidebar = document.getElementById("sidebar");
-        var content = document.getElementById("content");
-        sidebar.classList.toggle("active");
-        content.classList.toggle("shifted");
-    };
-    </script>
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

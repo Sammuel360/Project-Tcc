@@ -107,6 +107,83 @@ class UsuarioController
 
         return true;
     }
+    public function atualizarUsuario(array $dados)
+    {
+        session_start();
+
+        // Obter o ID do usuário logado
+        $idUsuario = $_SESSION['usuario']->id ?? null;
+
+        if (!$idUsuario) {
+            $this->redirectWithMessage('index.php?c=usuario&a=logar', 'Você precisa estar logado para atualizar os dados.', 'warning');
+            return;
+        }
+
+        // Validar os dados enviados
+        $erros = $this->validarDadosUsuario($dados);
+        if (!empty($erros)) {
+            $mensagemErro = implode('<br>', $erros);
+            $this->redirectWithMessage('index.php?c=usuario&a=atualizar', $mensagemErro, 'warning');
+            return;
+        }
+
+        // Validar e-mail
+        $email = filter_var($dados['email'], FILTER_VALIDATE_EMAIL);
+        if (!$email) {
+            $this->redirectWithMessage('index.php?c=usuario&a=atualizar', 'E-mail inválido.', 'warning');
+            return;
+        }
+
+        // Atualizar os dados no model
+        $this->usuario->data = (object) [
+            'id' => $idUsuario,
+            'nome' => $dados['nome'],
+            'email' => $email,
+            'telefone' => $dados['telefone'],
+            'endereco' => $dados['endereco'],
+            'cidade' => $dados['cidade'],
+            'estado' => $dados['estado'],
+            'cep' => $dados['cep'],
+            'senha' => $_SESSION['usuario']->senha // Mantém a senha atual
+        ];
+
+        // Persistir os dados no banco
+        if ($this->usuario->save()) {
+            // Atualiza os dados na sessão
+            $this->atualizarDadosSessao($this->usuario->data);
+
+            $this->redirectWithMessage('index.php?c=usuario&a=atualizar', 'Dados atualizados com sucesso!', 'success');
+        } else {
+            $this->redirectWithMessage('index.php?c=usuario&a=atualizar', 'Erro ao atualizar os dados.', 'error');
+        }
+    }
+
+    /**
+     * Método para validar os dados do usuário.
+     */
+    private function validarDadosUsuario(array $dados): array
+    {
+        $erros = [];
+        $camposObrigatorios = ['nome', 'email', 'telefone', 'endereco', 'cidade', 'estado', 'cep'];
+
+        foreach ($camposObrigatorios as $campo) {
+            if (empty($dados[$campo])) {
+                $erros[] = "O campo $campo é obrigatório.";
+            }
+        }
+
+        return $erros;
+    }
+
+    /**
+     * Atualiza os dados do usuário na sessão.
+     */
+    private function atualizarDadosSessao(object $dadosUsuario): void
+    {
+        $_SESSION['usuario'] = $dadosUsuario;
+    }
+
+
 
     public function main()
     {

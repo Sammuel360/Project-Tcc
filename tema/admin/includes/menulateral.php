@@ -6,13 +6,25 @@
         </div>
         <h1>Fiscal Cidadão</h1>
         <nav>
+            <!-- Botão de Pesquisa -->
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Pesquisar..." class="search-input">
+                <button class="search-button">
+                    <i class="fas fa-search"></i> <!-- Ícone da lupa -->
+                </button>
+            </div>
+            <!-- Links do Menu -->
             <a href="http://localhost/fiscalapp/index.php?c=usuario&a=main">🏠 Início</a>
             <a href="http://localhost/fiscalapp/index.php?c=status&a=listar">📊 Status</a>
             <a href="http://localhost/fiscalapp/index.php?c=notificacoes&a=index">🔔 Notificações</a>
             <a href="http://localhost/fiscalapp/index.php?c=chamado&a=abrirFormulario">📝 Chamados</a>
             <a href="http://localhost/fiscalapp/index.php?c=configuracao&a=index">⚙️ Configurações</a>
             <a href="http://localhost/fiscalapp/index.php?c=ajuda&a=index">❓ Ajuda</a>
-            <a href="http://localhost/fiscalapp/index.php?c=usuario&a=perfil">👤 Perfil</a>
+            <a href="http://localhost/fiscalapp/index.php?c=usuario&a=atualizar">👤 Perfil</a>
+            <!-- Botão de Logoff -->
+            <a href="http://localhost/fiscalapp/index.php?c=usuario&a=logoff" class="logout-button">🚪 Sair</a>
+            <!-- Botão para alternar tema -->
+
         </nav>
     </div>
 </header>
@@ -27,14 +39,18 @@
         <li><a href="http://localhost/fiscalapp/index.php?c=usuario&a=main">🏠 Início</a></li>
         <li><a href="http://localhost/fiscalapp/index.php?c=status&a=listar">📊 Status</a></li>
         <li><a href="http://localhost/fiscalapp/index.php?c=notificacoes&a=index">🔔 Notificações</a></li>
-        <li><a href="http://localhost/fiscalapp/index.php?c=usuario&a=perfil">👤 Perfil</a></li>
+        <li><a href="http://localhost/fiscalapp/index.php?c=usuario&a=atualizar">👤 Perfil</a></li>
         <li><a href="http://localhost/fiscalapp/index.php?c=configuracao&a=index">⚙️ Configurações</a></li>
         <li><a href="http://localhost/fiscalapp/index.php?c=ajuda&a=index">❓ Ajuda</a></li>
         <li><a href="http://localhost/fiscalapp/index.php?c=chamado&a=abrirFormulario">📝 Chamados</a></li>
+        <li><a href="http://localhost/fiscalapp/index.php?c=usuario&a=logoff" class="logout-button">🚪 Sai</a>
+        </li>
+        <!-- Botão para alternar tema -->
+
+
     </ul>
 </nav>
 
-<!-- Estilos diretamente no arquivo -->
 <!-- Estilos diretamente no arquivo -->
 <style>
 /* Cores */
@@ -72,25 +88,82 @@ header {
     z-index: 1000;
 }
 
+/* Ajustar a posição do conteúdo da barra superior */
 .top-bar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    /* Muda de 'space-between' para 'flex-start' para alinhar à esquerda */
+    padding-left: 10px;
+    /* Ajuste a margem à esquerda conforme necessário */
 }
 
 .top-bar h1 {
     font-size: 1.5rem;
+    margin-left: auto;
+    /* Isso garante que o título fique à esquerda */
+}
+
+.top-bar nav {
+    margin-left: 20px;
+    /* Adiciona algum espaço à esquerda para o menu */
 }
 
 .top-bar nav a {
     color: white;
-    margin-left: 15px;
+    margin-right: 20px;
     text-decoration: none;
     font-weight: bold;
 }
 
 .top-bar nav a:hover {
     color: var(--cor-secundaria);
+}
+
+/* Ajuste para o campo de pesquisa se necessário */
+.search-container {
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    /* Ajuste à esquerda da pesquisa */
+}
+
+
+.search-input {
+    padding: 5px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 5px;
+}
+
+.search-button {
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: var(--cor-secundaria);
+}
+
+.search-button i {
+    font-size: 1rem;
+}
+
+/* Botão de Logoff */
+.logout-button {
+    color: white;
+    background-color: #ff5722;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.logout-button:hover {
+    background-color: #e64a19;
 }
 
 /* Menu Lateral */

@@ -32,16 +32,18 @@ switch ($c) {
                     include $controller->logar();
                 }
                 break;
+
             case 'main':
                 $path = $controller->main(); // Chama o método e pega o caminho retornado
                 if ($path) {
                     include $path; // Inclui o arquivo retornado
                 }
+                break;
 
-                break;
             case 'cadastrar':
-                include  $controller->cadastrar();
+                include $controller->cadastrar();
                 break;
+
             case 'inserir':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $controller->registrarUsuario(
@@ -58,11 +60,25 @@ switch ($c) {
                     include $controller->cadastrar();
                 }
                 break;
+
+            case 'atualizar':
+                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                    // Passa os dados enviados no formulário para o método atualizarUsuario
+                    $controller->atualizarUsuario($_POST);
+                } else {
+                    // Renderiza diretamente o formulário de atualização do usuário
+                    include('tema/admin/pages/perfil.php');
+                    // Certifique-se de que este caminho está correto
+                }
+                break;
+
             default:
-                include $controller->logar(); // caso a action não seja reconhecida
+                include $controller->logar(); // Caso a action não seja reconhecida
                 break;
         }
         break;
+
+
 
     case 'chamado':
         // Crie as instâncias dos modelos

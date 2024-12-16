@@ -20,7 +20,7 @@ include_once __DIR__ . '/../includes/menulateral.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Fiscal Cidadão</title>
+    <title>Bem vindo ao Fiscal Cidadao</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -104,6 +104,12 @@ include_once __DIR__ . '/../includes/menulateral.php';
     .dashboard-links ul li a:hover {
         color: #2980b9;
     }
+
+    .carousel-inner img {
+        width: 1200px;
+        height: 700px;
+        object-fit: cover;
+    }
     </style>
 </head>
 
@@ -111,14 +117,14 @@ include_once __DIR__ . '/../includes/menulateral.php';
     <div id="carouselExample" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
             <div class="carousel-item active">
-                <img src="https://www.osguedes.com.br/wp-content/uploads/2023/09/Castramovel.jpg" class="d-block w-100"
-                    alt="Imagem 1">
+                <img src="https://www.designi.com.br/images/preview/11084562.jpg" class="d-block w-100" alt="Imagem 1">
             </div>
             <div class="carousel-item">
-                <img src="image2.jpg" class="d-block w-100" alt="Imagem 2">
+                <img src="https://www.designi.com.br/images/preview/12831167.jpg" class="d-block w-100" alt="Imagem 2">
             </div>
             <div class="carousel-item">
-                <img src="image3.jpg" class="d-block w-100" alt="Imagem 3">
+                <img src="https://www.tupaense.com.br/wp-content/uploads/2019/09/DSC_0009-1024x681.jpg"
+                    class="d-block w-100" alt="Imagem 3">
             </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
@@ -135,8 +141,8 @@ include_once __DIR__ . '/../includes/menulateral.php';
     <div class="container-fluid">
         <!-- Header com título e descrição -->
         <div class="dashboard-header">
-            <h1>Configurações - Fiscal Cidadão</h1>
-            <p>Atualize suas informações pessoais e de contato</p>
+            <h1> Fiscal Cidadão</h1>
+            <p>Faca sua reclamacao, aqui voce é prioridade</p>
         </div>
 
         <!-- Dashboard com os cards -->
@@ -218,6 +224,9 @@ include_once __DIR__ . '/../includes/menulateral.php';
         }
     });
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 </body>
 
